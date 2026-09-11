@@ -1,7 +1,7 @@
 {
   "name": "denti-e-cura",
   "productName": "Denti & Cura",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Gestionale per studio dentistico - agenda, pazienti, preventivi e fatturazione",
   "author": "Fioravante Capaccio",
   "license": "UNLICENSED",
@@ -9,14 +9,15 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist:win": "electron-builder --win nsis portable",
-    "dist:win:portable": "electron-builder --win portable"
+    "dist:win": "electron-builder --win nsis portable --publish=never",
+    "dist:win:portable": "electron-builder --win portable --publish=never"
   },
   "devDependencies": {
     "electron": "^33.0.0",
     "electron-builder": "^25.1.8"
   },
   "build": {
+    "publish": null,
     "appId": "com.fioravantecapaccio.dentiecura",
     "productName": "Denti & Cura",
     "files": [
