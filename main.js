@@ -85,6 +85,8 @@ ipcMain.handle('backup:clear-folder', async () => {
   return { ok: true };
 });
 
+ipcMain.on('app:quit', () => app.quit());
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 1360,

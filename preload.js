@@ -17,5 +17,6 @@ contextBridge.exposeInMainWorld('desktopApp', {
     chooseFolder: () => ipcRenderer.invoke('backup:choose-folder'),
     getStatus: () => ipcRenderer.invoke('backup:get-status'),
     clearFolder: () => ipcRenderer.invoke('backup:clear-folder')
-  }
+  },
+  quit: () => ipcRenderer.send('app:quit')
 });
