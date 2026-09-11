@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Studio Dentale · Agenda e fatturazione</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%231c1912' d='M12 3.2c-1.8 0-2.9.9-4.6.9-2.1 0-3.7 1.8-3.7 4.9 0 3.2 1.1 7.3 2.3 10.1.6 1.4 1.2 2.7 2.3 2.7 1.2 0 1.5-1.8 1.7-3.6.2-1.7.6-2.9 1.9-2.9s1.7 1.2 1.9 2.9c.2 1.8.5 3.6 1.7 3.6 1.1 0 1.7-1.3 2.3-2.7 1.2-2.8 2.3-6.9 2.3-10.1 0-3.1-1.6-4.9-3.7-4.9-1.7 0-2.7-.9-4.4-.9Z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+  <style>
+    :root {
+      --ink: #1c1912;
+      --muted: #8b8270;
+      --paper: #fbf4e8;
+      --paper-2: #f3e9d3;
+      --panel: #fff;
+      --line: #ece2cd;
+      --teal: #6b4e9c;
+      --teal-dark: #4d3a72;
+      --mint: #e1ead9;
+      --sage-ink: #3f5b34;
+      --accent-soft: #efe8f9;
+      --coral: #c24f68;
+      --rose-bg: #fbe0e4;
+      --amber: #8a5a12;
+      --butter-bg: #fbe9b9;
+      --shadow: 0 20px 48px rgba(40, 30, 10, .08);
+      --radius: 22px;
+      --font-display: 'Fraunces', Georgia, "Times New Roman", serif;
+      --font-body: 'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { background: var(--paper); overflow-x: clip; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--font-body); min-height: 100vh; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #c9b3ea; outline-offset: 2px; }
+    .shell { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); }
+    .rail { background: var(--panel); color: var(--ink); border-right: 1px solid var(--line); padding: 28px 18px; display: flex; flex-direction: column; gap: 34px; }
+    .brand { padding: 0 12px; }
+    .brand-mark { color: var(--muted); font-size: 14px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+    .brand-title-row { display: flex; align-items: center; gap: 9px; margin: 10px 0 8px; }
+    .brand-icon { flex: 0 0 auto; }
+    .brand h1 { font-family: var(--font-display); font-size: 28px; line-height: 1; margin: 0; font-weight: 500; }
+    .brand p { color: var(--muted); font-size: 12px; margin: 0; }
+    .brand h1 em { font-style: italic; font-weight: 500; }
+    .nav { display: grid; gap: 5px; }
+    .nav button { border: 0; background: transparent; color: var(--muted); padding: 12px; border-radius: 999px; text-align: left; display: flex; gap: 11px; align-items: center; font-weight: 600; }
+    .nav button:hover { background: var(--paper); color: var(--ink); }
+    .nav button.active { background: var(--butter-bg); color: #5c3f14; }
+    .nav button span:first-child { width: 22px; text-align: center; color: inherit; font-size: 18px; }
+    .nav button span:first-child svg { width: 18px; height: 18px; display: block; margin: 0 auto; }
+    .rail-note { margin-top: auto; background: var(--accent-soft); border: 1px solid var(--line); border-radius: 14px; padding: 14px; color: #4d3a72; font-size: 12px; line-height: 1.5; }
+    .rail-note strong { color: var(--ink); }
+    .main { min-width: 0; overflow: hidden; padding: 28px clamp(18px, 4vw, 56px) 56px; }
+    .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 30px; }
+    .eyebrow { color: var(--teal); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+    .topbar h2 { font-family: var(--font-display); font-size: clamp(32px, 4vw, 52px); line-height: .98; font-weight: 500; margin: 8px 0 0; letter-spacing: -.03em; }
+    .topbar h2 em { font-style: italic; }
+    .top-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .btn { border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 11px 16px; border-radius: 999px; font-weight: 700; white-space: nowrap; }
+    .btn:hover { border-color: var(--teal); color: var(--teal-dark); }
+    .btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .btn.primary:hover { background: #000; border-color: #000; }
+    .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); width: 100%; }
+    .grid { display: grid; gap: 18px; }
+    .metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 24px; }
+    .metric, .panel { min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .metric { padding: 20px; }
+    .metric-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+    .metric strong { display: block; font-family: var(--font-display); font-size: 32px; font-weight: 500; margin: 10px 0 4px; }
+    .metric small { color: var(--teal); font-weight: 700; }
+    .hero-row { grid-template-columns: 1.25fr 1fr; margin-bottom: 22px; }
+    .hero-card { position: relative; overflow: hidden; border-radius: var(--radius); padding: 28px; min-height: 188px; display: flex; align-items: center; }
+    .hero-welcome { background: #f2ecfb; }
+    .hero-next { background: #dce8f5; }
+    .hero-copy { position: relative; z-index: 1; max-width: 62%; }
+    .hero-copy h3 { font-family: var(--font-display); font-size: 24px; line-height: 1.08; font-weight: 500; margin: 8px 0 6px; letter-spacing: -.01em; }
+    .hero-copy h3 em { font-style: italic; }
+    .hero-copy p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 16px; }
+    .hero-img { position: absolute; right: 6px; bottom: 0; width: 168px; height: auto; }
+    .hero-date-row { display: flex; align-items: center; gap: 12px; margin: 10px 0 14px; }
+    .hero-date-badge { background: #fff; border-radius: 12px; padding: 6px 10px; text-align: center; line-height: 1.05; flex: 0 0 auto; box-shadow: 0 6px 14px rgba(46,90,140,.14); }
+    .hero-date-badge strong { display: block; font-family: var(--font-display); font-size: 20px; }
+    .hero-date-badge small { display: block; font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .hero-copy .hero-appt-title { font-family: var(--font-display); font-size: 16.5px; font-weight: 600; margin: 0; }
+    .hero-copy .hero-appt-sub { color: var(--muted); font-size: 12.5px; margin: 3px 0 0; }
+    @media (max-width: 980px) { .hero-row { grid-template-columns: 1fr; } }
+    @media (max-width: 520px) { .hero-img { display: none; } .hero-copy { max-width: 100%; } }
+    .metric.c1 { background: #eee6fb; border-color: transparent; }
+    .metric.c1 .metric-label, .metric.c1 small { color: #6b4e9c; }
+    .metric.c1 strong { color: #2c1f47; }
+    .metric.c2 { background: #e1ead9; border-color: transparent; }
+    .metric.c2 .metric-label, .metric.c2 small { color: #3f5b34; }
+    .metric.c2 strong { color: #233318; }
+    .metric.c3 { background: #dce8f5; border-color: transparent; }
+    .metric.c3 .metric-label, .metric.c3 small { color: #2e5a8c; }
+    .metric.c3 strong { color: #1a3653; }
+    .metric.c4 { background: #fbe0e4; border-color: transparent; }
+    .metric.c4 .metric-label, .metric.c4 small { color: #a13a52; }
+    .metric.c4 strong { color: #5c1626; }
+    .quick-actions .btn span:last-child { width: 24px; height: 24px; border-radius: 50%; background: var(--paper); display: inline-grid; place-items: center; font-size: 13px; flex: 0 0 auto; }
+    .btn.primary span:last-child { background: rgba(255,255,255,.18); color: #fff; }
+    .content-grid { grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); align-items: start; }
+    .panel { padding: 22px; }
+    .panel-head { display: flex; justify-content: space-between; gap: 15px; align-items: flex-start; margin-bottom: 18px; }
+    .panel h3 { font-family: var(--font-display); font-size: 25px; font-weight: 500; margin: 0; }
+    .panel-subtitle { color: var(--muted); font-size: 13px; margin: 5px 0 0; }
+    .agenda-list, .invoice-list { display: grid; gap: 10px; }
+    .appointment { display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; align-items: center; gap: 15px; border-top: 1px solid var(--line); padding: 14px 0; }
+    .appointment:first-child { border-top: 0; padding-top: 0; }
+    .time { color: var(--teal); font-weight: 800; font-size: 14px; }
+    .patient { font-weight: 800; }
+    .patient small { display: block; font-weight: 400; color: var(--muted); margin-top: 4px; }
+    .status { border-radius: 99px; padding: 5px 9px; font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .status.confirmed, .status.paid { background: var(--mint); color: var(--sage-ink); }
+    .status.pending { background: var(--butter-bg); color: var(--amber); }
+    .status.overdue { background: var(--rose-bg); color: var(--coral); }
+    .quick-actions { display: grid; gap: 10px; }
+    .quick-actions .btn { text-align: left; display: flex; justify-content: space-between; }
+    .bar { margin: 19px 0 0; border-top: 1px solid var(--line); padding-top: 18px; }
+    .bar-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 7px; }
+    .progress { height: 8px; background: #e7efeb; border-radius: 99px; overflow: hidden; }
+    .progress span { display: block; height: 100%; width: 68%; background: var(--teal); border-radius: inherit; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    .toolbar input, .toolbar select, .form-grid input, .form-grid select, .form-grid textarea { border: 1px solid var(--line); background: #fbfdfb; border-radius: 10px; padding: 11px 12px; color: var(--ink); min-width: 170px; }
+    .toolbar input { flex: 1 1 240px; }
+    .calendar-panel { margin-bottom: 22px; }
+    .calendar-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+    .calendar-title { font-family: var(--font-display); font-size: 26px; font-weight: 500; text-transform: capitalize; }
+    .calendar-actions { display: flex; gap: 8px; }
+    .calendar-actions .btn { padding: 8px 11px; }
+    .calendar-weekdays, .calendar-grid { min-width: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    .calendar-weekdays { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .calendar-weekdays span { padding: 8px; }
+    .calendar-grid { border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+    .calendar-day { min-width: 0; min-height: 100px; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel); padding: 9px; text-align: left; color: var(--ink); }
+    .calendar-day:hover { background: #f3faf7; }
+    .calendar-day.outside { background: #f8faf8; color: #a3b1ad; }
+    .calendar-day.today .day-number { background: var(--teal); color: #fff; }
+    .calendar-day.selected { box-shadow: inset 0 0 0 2px var(--teal); }
+    .day-number { display: inline-grid; place-items: center; width: 27px; height: 27px; border-radius: 50%; font-weight: 800; font-size: 13px; margin-bottom: 6px; }
+    .day-events { display: grid; gap: 4px; }
+    .day-event { display: block; min-width: 0; border-radius: 6px; background: var(--mint); color: var(--sage-ink); padding: 4px 5px; font-size: 11px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .day-event.pending { background: var(--butter-bg); color: var(--amber); }
+    .day-more { color: var(--muted); font-size: 10px; }
+    .day-detail { margin-top: 18px; padding-top: 17px; border-top: 1px solid var(--line); }
+    .day-detail h4 { font-family: var(--font-display); font-size: 22px; font-weight: 500; margin: 0 0 12px; }
+    .table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .data-table th { text-align: left; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; font-size: 11px; padding: 11px 8px; border-bottom: 1px solid var(--line); }
+    .data-table td { padding: 14px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: 0; }
+    .table-action { padding: 7px 9px; font-size: 12px; }
+    .empty { color: var(--muted); padding: 25px 0; text-align: center; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(8, 37, 36, .48); display: none; place-items: center; padding: 18px; z-index: 20; }
+    .modal-backdrop.open { display: grid; }
+    .modal { width: min(680px, 100%); max-height: 90vh; overflow: auto; background: var(--panel); border-radius: 20px; padding: 25px; box-shadow: 0 24px 80px rgba(0,0,0,.25); }
+    #modalBackdrop:has(#serviceCatalogModal) .modal { width: min(1100px, calc(100vw - 32px)); max-width: 1100px; }
+    .prescription-exam-row select { flex: 1; min-width: 0; }
+    .completed-work-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .completed-work-row span { font-weight: 700; }
+    .completed-work-row small { color: var(--muted); white-space: nowrap; }
+    .modal-head { display: flex; justify-content: space-between; align-items: start; gap: 20px; margin-bottom: 20px; }
+    .modal h3 { font-family: var(--font-display); font-size: 29px; font-weight: 500; margin: 0; }
+    .close { border: 0; background: var(--paper); border-radius: 50%; width: 34px; height: 34px; font-size: 20px; color: var(--muted); }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .field { display: grid; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+    .form-grid input, .form-grid select, .form-grid textarea { width: 100%; min-width: 0; }
+    .form-grid textarea { min-height: 90px; resize: vertical; }
+    .clinical-description textarea { min-height: 190px; line-height: 1.5; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+    .quote-custom-fields { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+    .quote-custom-fields h4 { font-family: var(--font-display); font-size: 21px; font-weight: 500; margin: 0 0 5px; }
+    .quote-custom-fields > p { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+    .quote-custom-fields-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .quote-custom-fields-grid .field.full { grid-column: 1 / -1; }
+    .day-timeline { display: grid; grid-template-columns: 58px minmax(0, 1fr); max-height: 62vh; overflow: auto; }
+    .timeline-hours, .timeline-canvas { position: relative; height: 768px; }
+    .timeline-hour { height: 64px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; padding-top: 5px; }
+    .timeline-canvas { border-left: 1px solid var(--line); background: repeating-linear-gradient(to bottom, transparent 0, transparent 63px, var(--line) 63px, var(--line) 64px); }
+    .timeline-event { position: absolute; left: 10px; right: 10px; min-height: 28px; overflow: hidden; border: 1px solid var(--teal); border-radius: 9px; background: var(--mint); color: var(--sage-ink); padding: 7px 10px; font-size: 12px; line-height: 1.25; box-shadow: 0 5px 12px rgba(107,78,156,.12); }
+    .timeline-event.pending { background: var(--butter-bg); border-color: var(--amber); color: var(--amber); }
+    .timeline-event strong, .timeline-event small { display: block; }
+    .timeline-event small { margin-top: 3px; color: inherit; opacity: .82; }
+    .toast { position: fixed; right: 20px; bottom: 20px; background: var(--teal-dark); color: #fff; padding: 13px 16px; border-radius: 10px; box-shadow: var(--shadow); transform: translateY(20px); opacity: 0; pointer-events: none; transition: .2s; z-index: 30; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .invoice-total { background: var(--mint); border-radius: 12px; padding: 14px; display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; font-weight: 800; margin-top: 16px; }
+    .invoice-total small { grid-column: 1 / -1; color: var(--muted); font-weight: 500; line-height: 1.4; }
+    .quote-total { font-size: 18px; }
+    .quote-balance { color: var(--coral); font-weight: 800; }
+    .quotes-table th:nth-child(3), .quotes-table td:nth-child(3) { min-width: 190px; }
+    .quotes-table th:nth-child(5), .quotes-table td:nth-child(5) { min-width: 170px; }
+    .quotes-table th:nth-child(6), .quotes-table td:nth-child(6) { white-space: nowrap; }
+    .quote-item-line { font-size: 13px; line-height: 1.5; }
+    .quote-item-line + .quote-item-line { margin-top: 2px; }
+    .quote-item-line small { color: var(--muted); }
+    .quote-check { display: inline-block; width: 14px; color: var(--muted); }
+    .quote-check.done { color: var(--teal); }
+    .quote-more, .quote-progress-label { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
+    .quote-amount-cell { min-width: 130px; }
+    .quote-amount-cell .progress { margin: 6px 0; }
+    .progress.small { height: 5px; }
+    .tag { display: inline-block; border-radius: 99px; padding: 3px 8px; font-size: 11px; font-weight: 800; }
+    .tag.balance { background: var(--rose-bg); color: var(--coral); }
+    .tag.settled { background: var(--mint); color: var(--sage-ink); }
+    .quote-doc-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 5px 6px 5px 9px; margin-bottom: 5px; }
+    .quote-doc-row:last-child { margin-bottom: 0; }
+    .quote-doc-row strong { font-weight: 700; }
+    .btn-icon { flex: 0 0 auto; border: 0; background: transparent; color: var(--muted); width: 20px; height: 20px; border-radius: 6px; font-size: 15px; line-height: 1; cursor: pointer; display: grid; place-items: center; }
+    .btn-icon:hover, .btn-icon:focus-visible { background: var(--rose-bg); color: var(--coral); outline: 0; }
+    .quote-actions-cell { display: flex; flex-wrap: wrap; gap: 6px; }
+    .stats-panel { margin-top: 18px; }
+    .stats-chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+    .stats-chart text { font-family: var(--font-body); }
+    .app-footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11.5px; text-align: center; }
+    .stats-method-row { padding: 12px 0; border-top: 1px solid var(--line); }
+    .stats-method-row:first-child { border-top: 0; padding-top: 0; }
+    .stats-method-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 13.5px; font-weight: 700; margin-bottom: 7px; }
+    .stats-method-row small { color: var(--muted); }
+    .stats-method-row .progress { margin-bottom: 6px; }
+    .settings-fields { display: grid; gap: 10px; margin-top: 18px; }
+    .settings-field-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+    .settings-field-row input { min-width: 0; }
+    .patient-picker { position: relative; }
+    .patient-picker input { width: 100%; }
+    .patient-suggestions { position: absolute; z-index: 4; left: 0; right: 0; top: calc(100% + 4px); display: none; max-height: 190px; overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 4px; }
+    .patient-suggestions.open { display: grid; }
+    .patient-suggestion { border: 0; background: transparent; color: var(--ink); padding: 9px 10px; border-radius: 7px; text-align: left; }
+    .patient-suggestion:hover, .patient-suggestion:focus-visible { background: var(--accent-soft); color: var(--teal-dark); outline: 0; }
+    .settings-doctors { margin-top: 18px; }
+    .doctor-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+    .doctor-table th, .doctor-table td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .doctor-table th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+    .dental-arch { position: relative; max-width: 610px; margin: 12px auto; padding: 24px 18px 20px; border: 1px solid var(--line); border-radius: 48% 48% 18% 18% / 40% 40% 14% 14%; background: radial-gradient(ellipse at center, #ffffff 0 52%, var(--accent-soft) 100%); }
+    .dental-arch h4 { margin: 0; }
+    .dental-arch.lower { border-radius: 18% 18% 48% 48% / 14% 14% 40% 40%; padding-top: 20px; }
+    .arch-label { text-align: center; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+    .dental-arch .arch-row { display: grid; grid-template-columns: repeat(16, minmax(22px, 1fr)); align-items: end; gap: 3px; min-height: 78px; }
+    .dental-arch.lower .arch-row { align-items: start; }
+    .tooth { min-width: 0; padding: 7px 2px; border: 1px solid var(--line); border-radius: 45% 45% 38% 38%; background: var(--panel); color: var(--ink); font-weight: 600; font-size: 10px; cursor: pointer; box-shadow: 0 1px 2px rgba(28,25,18,.08); transition: transform .15s ease, background .15s ease; }
+    .dental-arch:not(.lower) .tooth:nth-child(1), .dental-arch:not(.lower) .tooth:nth-child(16) { transform: translateY(28px) rotate(-16deg); }
+    .dental-arch:not(.lower) .tooth:nth-child(2), .dental-arch:not(.lower) .tooth:nth-child(15) { transform: translateY(18px) rotate(-11deg); }
+    .dental-arch:not(.lower) .tooth:nth-child(3), .dental-arch:not(.lower) .tooth:nth-child(14) { transform: translateY(10px) rotate(-7deg); }
+    .dental-arch:not(.lower) .tooth:nth-child(4), .dental-arch:not(.lower) .tooth:nth-child(13) { transform: translateY(4px) rotate(-4deg); }
+    .dental-arch:not(.lower) .tooth:nth-child(5), .dental-arch:not(.lower) .tooth:nth-child(12) { transform: translateY(0); }
+    .dental-arch:not(.lower) .tooth:nth-child(6), .dental-arch:not(.lower) .tooth:nth-child(11) { transform: translateY(-3px); }
+    .dental-arch:not(.lower) .tooth:nth-child(7), .dental-arch:not(.lower) .tooth:nth-child(10) { transform: translateY(-5px); }
+    .dental-arch:not(.lower) .tooth:nth-child(8), .dental-arch:not(.lower) .tooth:nth-child(9) { transform: translateY(-7px); }
+    .dental-arch.lower .tooth:nth-child(1), .dental-arch.lower .tooth:nth-child(16) { transform: translateY(-28px) rotate(16deg); }
+    .dental-arch.lower .tooth:nth-child(2), .dental-arch.lower .tooth:nth-child(15) { transform: translateY(-18px) rotate(11deg); }
+    .dental-arch.lower .tooth:nth-child(3), .dental-arch.lower .tooth:nth-child(14) { transform: translateY(-10px) rotate(7deg); }
+    .dental-arch.lower .tooth:nth-child(4), .dental-arch.lower .tooth:nth-child(13) { transform: translateY(-4px) rotate(4deg); }
+    .dental-arch.lower .tooth:nth-child(5), .dental-arch.lower .tooth:nth-child(12) { transform: translateY(0); }
+    .dental-arch.lower .tooth:nth-child(6), .dental-arch.lower .tooth:nth-child(11) { transform: translateY(3px); }
+    .dental-arch.lower .tooth:nth-child(7), .dental-arch.lower .tooth:nth-child(10) { transform: translateY(5px); }
+    .dental-arch.lower .tooth:nth-child(8), .dental-arch.lower .tooth:nth-child(9) { transform: translateY(7px); }
+    .tooth:hover, .tooth.selected { background: var(--accent-soft); border-color: var(--teal); color: var(--teal-dark); transform: translateY(-4px) scale(1.08); z-index: 1; }
+    .quote-item-row { align-items: center; }
+    .quote-item-row select { min-width: 140px; }
+    #modalBackdrop:has(#quoteItemsModal) .modal { width: min(1180px, calc(100vw - 32px)); max-width: 1180px; }
+    #quoteItemsModal { display: grid; gap: 8px; overflow-x: auto; }
+    #quoteItemsModal .quote-item-row { display: grid; grid-template-columns: minmax(280px, 1fr) 155px 105px 125px auto; gap: 8px; min-width: 760px; }
+    #quoteItemsModal .quote-item-row input, #quoteItemsModal .quote-item-row select { min-width: 0; width: 100%; }
+    .quote-catalog { margin-top: 18px; }
+    .quote-catalog-row { display: grid; grid-template-columns: minmax(0, 1fr) 150px auto; gap: 8px; align-items: center; margin-top: 8px; }
+    .service-catalog-row { display: grid; grid-template-columns: minmax(260px, 1fr) 150px 180px auto; gap: 8px; align-items: center; }
+    @media (max-width: 700px) { .service-catalog-row { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) { .quote-catalog-row { grid-template-columns: 1fr; } }
+    .print-only { display: none; }
+    @media print { @page { margin: 16mm; } body { background: #fff; } .rail, .top-actions, .toolbar, .btn, .calendar-actions, .modal-backdrop, .toast, .quick-actions, .bar, .app-footer { display: none !important; } .shell, .main { display: block; padding: 0; } .view { display: none !important; } .view.active { display: block !important; } .panel, .metric { box-shadow: none; border: 1px solid #ccd5d1; break-inside: avoid; } .print-only { display: block; } .data-table { min-width: 0 !important; } }
+    @media (max-width: 980px) { .shell { grid-template-columns: minmax(0, 1fr); } .rail { position: sticky; top: 0; z-index: 10; padding: 14px 18px; display: block; } .brand { display: flex; align-items: center; gap: 12px; padding: 0; } .brand h1 { margin: 0; font-size: 22px; } .brand p, .brand-mark { display: none; } .nav { display: flex; overflow-x: auto; margin-top: 12px; padding-bottom: 2px; } .nav button { white-space: nowrap; padding: 9px 11px; } .nav button span:first-child { display: none; } .rail-note { display: none; } }
+    @media (max-width: 760px) { .main { width: 100%; } .metrics, .content-grid { grid-template-columns: 1fr; } .topbar { display: block; } .top-actions { justify-content: flex-start; margin-top: 18px; } .appointment { grid-template-columns: 60px minmax(0, 1fr); } .appointment .status { grid-column: 2; justify-self: start; } .form-grid { grid-template-columns: 1fr; } .field.full { grid-column: auto; } .calendar-panel, .calendar-grid, .calendar-weekdays { min-width: 0; overflow: hidden; } .calendar-day { min-height: 78px; padding: 5px 3px; } .calendar-weekdays span { padding: 6px 3px; font-size: 9px; } .day-event { font-size: 9px; padding: 3px; } .toolbar input { min-width: 0; width: 100%; flex: 1 1 auto; } .data-table { min-width: 640px; } .table-wrap { min-width: 0; overflow-x: auto; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Navigazione principale">
+      <div class="brand"><div class="brand-mark">Studio privato</div><div class="brand-title-row"><svg class="brand-icon" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1c1912" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2c-1.8 0-2.9.9-4.6.9-2.1 0-3.7 1.8-3.7 4.9 0 3.2 1.1 7.3 2.3 10.1.6 1.4 1.2 2.7 2.3 2.7 1.2 0 1.5-1.8 1.7-3.6.2-1.7.6-2.9 1.9-2.9s1.7 1.2 1.9 2.9c.2 1.8.5 3.6 1.7 3.6 1.1 0 1.7-1.3 2.3-2.7 1.2-2.8 2.3-6.9 2.3-10.1 0-3.1-1.6-4.9-3.7-4.9-1.7 0-2.7-.9-4.4-.9Z"/></svg><h1>Denti &amp; <em>Cura</em></h1></div><p>Agenda, pazienti e fatture</p></div>
+      <nav class="nav">
+        <button class="active" data-view="dashboard"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-9"/><path d="M9.5 20v-6h5v6"/></svg></span><span>Panoramica</span></button>
+        <button data-view="agenda"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17"/><path d="M8 3v4M16 3v4"/></svg></span><span>Agenda</span></button>
+        <button data-view="patients"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.3"/><path d="M5 20c.7-3.6 3.4-5.8 7-5.8s6.3 2.2 7 5.8"/></svg></span><span>Pazienti</span></button>
+        <button data-view="therapies"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5.5-6 4 4L20 6"/><path d="M14.5 6H20v5.5"/></svg></span><span>Terapie</span></button>
+        <button data-view="inventory"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8 12 3.5 20.5 8 12 12.5 3.5 8Z"/><path d="M3.5 8v8.2L12 20.5l8.5-4.3V8"/><path d="M12 12.5V20.5"/></svg></span><span>Magazzino</span></button>
+        <button data-view="prescriptions"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="4.5" width="13" height="16.5" rx="1.6"/><path d="M9 4.5V3.5a1.3 1.3 0 0 1 1.3-1.3h3.4A1.3 1.3 0 0 1 15 3.5v1"/><path d="M8.5 10.5h7M8.5 14h7M8.5 17.5h4.5"/></svg></span><span>Prescrizioni</span></button>
+        <button data-view="invoices"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h11a1 1 0 0 1 1 1V21l-2.5-1.5L13.5 21l-2.5-1.5L8.5 21 6 19.5V4.5a1 1 0 0 1 .5-1Z"/><path d="M9 8.5h6M9 12h6M9 15.5h4"/></svg></span><span>Fatturazione</span></button>
+        <button data-view="quotes"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M14 3.5V8h4"/><path d="M8.5 12.5h7M8.5 16h5"/></svg></span><span>Preventivi</span></button>
+        <button data-view="statistics"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20.5V10M11 20.5V4.5M18 20.5v-7"/><path d="M3.5 20.5h17"/></svg></span><span>Statistiche</span></button>
+        <button data-view="settings"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2M12 18.5v2M20.5 12h-2M5.5 12h-2M17.7 6.3l-1.4 1.4M7.7 16.3l-1.4 1.4M17.7 17.7l-1.4-1.4M7.7 7.7 6.3 6.3"/></svg></span><span>Impostazioni</span></button>
+      </nav>
+      <div class="rail-note"><strong>Giornata protetta</strong><br>Ricorda di confermare gli appuntamenti del giorno prima entro le 17:00.</div>
+    </aside>
+    <main class="main">
+      <section id="dashboard" class="view active" aria-labelledby="dashboard-title">
+        <header class="topbar"><div><div class="eyebrow">Mercoledì 10 settembre 2026</div><h2 id="dashboard-title">Buongiorno, dott. <em>Rossi</em>.</h2></div></header>
+        <div class="grid hero-row">
+          <div class="hero-card hero-welcome">
+            <div class="hero-copy">
+              <h3>La tua <em>giornata</em>, in un colpo d'occhio.</h3>
+              <p>Agenda, pazienti e fatture aggiornati in tempo reale.</p>
+            </div>
+            <svg class="hero-img" viewBox="0 0 220 200" aria-hidden="true">
+              <ellipse cx="66" cy="156" rx="32" ry="8" fill="#00000012"/>
+              <ellipse cx="181" cy="152" rx="15" ry="4" fill="#00000012"/>
+              <rect x="178" y="120" width="6" height="32" rx="3" fill="#cbb8ea"/>
+              <circle cx="181" cy="95" r="26" fill="#f4eefc" stroke="#6b4e9c" stroke-width="2.5"/>
+              <circle cx="181" cy="95" r="19" fill="#ffffff" opacity=".6"/>
+              <path d="M128 150 h44 l-6 26a6 6 0 0 1-6 5h-20a6 6 0 0 1-6-5Z" fill="#6b4e9c"/>
+              <rect x="140" y="108" width="7" height="46" rx="3.5" fill="#efe8f9" stroke="#4d3a72" stroke-width="1.5" transform="rotate(-8 143 130)"/>
+              <rect x="137" y="103" width="13" height="14" rx="4" fill="#ffffff" stroke="#4d3a72" stroke-width="1.5" transform="rotate(-8 143 110)"/>
+              <g transform="translate(20,88) scale(3.4)">
+                <path d="M12 3.2c-1.8 0-2.9.9-4.6.9-2.1 0-3.7 1.8-3.7 4.9 0 3.2 1.1 7.3 2.3 10.1.6 1.4 1.2 2.7 2.3 2.7 1.2 0 1.5-1.8 1.7-3.6.2-1.7.6-2.9 1.9-2.9s1.7 1.2 1.9 2.9c.2 1.8.5 3.6 1.7 3.6 1.1 0 1.7-1.3 2.3-2.7 1.2-2.8 2.3-6.9 2.3-10.1 0-3.1-1.6-4.9-3.7-4.9-1.7 0-2.7-.9-4.4-.9Z" fill="#ffffff" stroke="#1c1912" stroke-width="0.9"/>
+              </g>
+            </svg>
+          </div>
+          <div class="hero-card hero-next" id="heroNext"></div>
+        </div>
+        <div class="grid metrics">
+          <div class="metric c1"><span class="metric-label">Appuntamenti oggi</span><strong id="metricAppointments">0</strong><small id="metricAppointmentsNote">Nessun appuntamento oggi</small></div>
+          <div class="metric c2"><span class="metric-label">Incassi del mese</span><strong id="metricRevenue">€ 0,00</strong><small id="metricRevenueNote">Nessun incasso registrato</small></div>
+          <div class="metric c4"><span class="metric-label">Fatture aperte</span><strong id="metricOpen">0</strong><small id="metricOpenNote">Nessuna fattura da incassare</small></div>
+          <div class="metric c3"><span class="metric-label">Nuovi pazienti</span><strong id="metricPatients">0</strong><small id="metricPatientsNote">Nessun paziente registrato</small></div>
+        </div>
+        <div class="grid content-grid">
+          <section class="panel"><div class="panel-head"><div><h3>Agenda di oggi</h3><p id="agendaSubtitle" class="panel-subtitle">10 settembre · appuntamenti registrati</p></div><button class="btn" data-view-link="agenda">Vedi agenda</button></div><div id="dashboardAppointments" class="agenda-list"></div></section>
+          <section class="panel"><div class="panel-head"><div><h3>Azioni rapide</h3><p class="panel-subtitle">Le operazioni più usate</p></div></div><div class="quick-actions"><button class="btn" data-open="patient">Nuovo paziente <span>→</span></button><button class="btn" data-view-link="agenda">Prenota visita <span>→</span></button><button class="btn" data-open="quote">Emetti preventivo <span>→</span></button><button class="btn" data-view-link="statistics">Vedi statistiche <span>→</span></button></div></section>
+        </div>
+      </section>
+      <section id="agenda" class="view" aria-labelledby="agenda-title"><header class="topbar"><div><div class="eyebrow">Calendario operativo</div><h2 id="agenda-title">Agenda</h2></div><div class="top-actions"><button class="btn" data-print="agenda">Stampa agenda</button><button class="btn primary" data-open="appointment">+ Nuovo appuntamento</button></div></header><div class="panel calendar-panel"><div class="calendar-head"><div><div id="calendarTitle" class="calendar-title"></div><p class="panel-subtitle">Seleziona un giorno per vedere gli appuntamenti</p></div><div class="calendar-actions"><button class="btn" type="button" data-calendar="prev" aria-label="Mese precedente">←</button><button class="btn" type="button" data-calendar="today">Oggi</button><button class="btn" type="button" data-calendar="next" aria-label="Mese successivo">→</button></div></div><div class="calendar-weekdays" aria-hidden="true"><span>Lun</span><span>Mar</span><span>Mer</span><span>Gio</span><span>Ven</span><span>Sab</span><span>Dom</span></div><div id="calendarGrid" class="calendar-grid" role="grid" aria-label="Calendario mensile"></div><div id="dayDetail" class="day-detail"></div></div><div class="panel"><div class="toolbar"><input id="appointmentSearch" type="search" placeholder="Cerca paziente o prestazione" aria-label="Cerca appuntamento"><select id="appointmentFilter" aria-label="Filtra appuntamenti"><option value="all">Tutti gli stati</option><option value="confirmed">Confermato</option><option value="pending">Da confermare</option></select></div><div id="agendaTable" class="table-wrap"></div></div></section>
+      <section id="patients" class="view" aria-labelledby="patients-title"><header class="topbar"><div><div class="eyebrow">Anagrafica</div><h2 id="patients-title">Pazienti</h2></div><div class="top-actions"><button class="btn" data-print="patients">Stampa elenco</button><button class="btn primary" data-open="patient">+ Nuovo paziente</button></div></header><div class="panel"><div class="toolbar"><input id="patientSearch" type="search" placeholder="Cerca per nome, telefono o email" aria-label="Cerca paziente"></div><div id="patientsTable" class="table-wrap"></div></div></section>
+      <section id="therapies" class="view" aria-labelledby="therapies-title"><header class="topbar"><div><div class="eyebrow">Percorsi di cura</div><h2 id="therapies-title">Terapie dentali</h2></div><div class="top-actions"><button class="btn" data-print="therapies">Stampa elenco</button><button class="btn primary" data-open="therapy">+ Nuova terapia</button></div></header><div class="panel"><div class="toolbar"><input id="therapySearch" type="search" placeholder="Cerca paziente o terapia" aria-label="Cerca terapia"></div><div id="therapiesTable" class="table-wrap"></div></div></section>
+      <section id="inventory" class="view" aria-labelledby="inventory-title"><header class="topbar"><div><div class="eyebrow">Prestazioni e prodotti</div><h2 id="inventory-title">Magazzino e inventario</h2></div><div class="top-actions"><button class="btn" data-print="inventory">Esporta inventario</button><button class="btn primary" data-open="inventory">+ Nuovo articolo</button></div></header><div class="panel"><div class="toolbar"><input id="inventorySearch" type="search" placeholder="Cerca codice, marca, fornitore o categoria" aria-label="Cerca articolo"><button class="btn" data-inventory-filter="low">Solo scorte basse</button><button class="btn" data-inventory-filter="all">Inventario completo</button></div><div id="inventoryTable" class="table-wrap"></div></div></section>
+      <section id="prescriptions" class="view" aria-labelledby="prescriptions-title"><header class="topbar"><div><div class="eyebrow">Documenti sanitari</div><h2 id="prescriptions-title">Prescrizioni esami</h2></div><div class="top-actions"><button class="btn" data-print="prescriptions">Stampa archivio</button><button class="btn primary" data-open="prescription">+ Nuova prescrizione</button></div></header><div class="panel"><div class="toolbar"><input id="prescriptionSearch" type="search" placeholder="Cerca paziente o esame" aria-label="Cerca prescrizione"><button class="btn" data-open="prescriptionList">Gestisci elenco esami</button></div><div id="prescriptionsTable" class="table-wrap"></div></div></section>
+      <section id="invoices" class="view" aria-labelledby="invoices-title"><header class="topbar"><div><div class="eyebrow">Amministrazione</div><h2 id="invoices-title">Fatturazione</h2><p class="panel-subtitle">Le fatture si emettono automaticamente registrando un pagamento da un preventivo.</p></div><div class="top-actions"><button class="btn" data-print="invoices">Stampa registro</button></div></header><div class="panel"><div class="toolbar"><input id="invoiceSearch" type="search" placeholder="Cerca numero o paziente" aria-label="Cerca fattura"><select id="invoiceFilter" aria-label="Filtra fatture"><option value="all">Tutti gli stati</option><option value="paid">Pagata</option><option value="pending">Da pagare</option><option value="overdue">Scaduta</option></select></div><div id="invoicesTable" class="table-wrap"></div></div></section>
+      <section id="quotes" class="view" aria-labelledby="quotes-title"><header class="topbar"><div><div class="eyebrow">Pianificazione cure</div><h2 id="quotes-title">Preventivi</h2></div><div class="top-actions"><button class="btn" data-print="quotes">Stampa preventivi</button><button class="btn primary" data-open="quote">+ Nuovo preventivo</button></div></header><div class="panel"><div class="toolbar"><input id="quoteSearch" type="search" placeholder="Cerca paziente o numero" aria-label="Cerca preventivo"></div><div id="quotesTable" class="table-wrap"></div></div></section>
+      <section id="statistics" class="view" aria-labelledby="statistics-title"><header class="topbar"><div><div class="eyebrow">Andamento dello studio</div><h2 id="statistics-title">Statistiche</h2></div><div class="top-actions"><button class="btn" data-print="statistics">Stampa</button></div></header><div class="grid metrics" id="statsMetrics"></div><section class="panel stats-panel"><div class="panel-head"><div><h3>Incassi mensili</h3><p class="panel-subtitle">Fatture pagate, ultimi 6 mesi</p></div></div><div id="statsRevenueChart" class="stats-chart"></div></section><div class="grid content-grid stats-panel"><section class="panel"><div class="panel-head"><div><h3>Prestazioni più richieste</h3><p class="panel-subtitle">Dalle prenotazioni in agenda</p></div></div><div id="statsServicesTable" class="table-wrap"></div></section><section class="panel"><div class="panel-head"><div><h3>Metodi di pagamento</h3><p class="panel-subtitle">Distribuzione degli incassi registrati</p></div></div><div id="statsPaymentMethods"></div></section></div><section class="panel stats-panel"><div class="panel-head"><div><h3>Prestazioni per fatturato</h3><p class="panel-subtitle">Valore generato dai preventivi, per tipo di prestazione</p></div></div><div id="statsRevenueTable" class="table-wrap"></div></section></section>
+      <section id="settings" class="view" aria-labelledby="settings-title"><header class="topbar"><div><div class="eyebrow">Configurazione</div><h2 id="settings-title">Impostazioni</h2></div><div class="top-actions"><button class="btn" data-print="settings">Stampa impostazioni</button><button class="btn primary" id="saveSettings" type="button">Salva impostazioni</button></div></header><div class="grid content-grid"><div class="panel"><div class="panel-head"><div><h3>Dati dello studio</h3><p class="panel-subtitle">Questi dati verranno usati nelle intestazioni e nei documenti.</p></div></div><form id="settingsForm" class="form-grid"><div class="field full"><label for="studioName">Nome studio</label><input id="studioName" name="studioName" required></div><div class="field"><label for="doctorName">Professionista</label><input id="doctorName" name="doctorName"></div><div class="field"><label for="vat">Partita IVA</label><input id="vat" name="vat"></div><div class="field full"><label for="address">Indirizzo</label><input id="address" name="address"></div><div class="field"><label for="city">CAP e città</label><input id="city" name="city"></div><div class="field"><label for="phone">Telefono</label><input id="phone" name="phone"></div><div class="field full"><label for="email">Email</label><input id="email" name="email" type="email"></div></form>            <div class="bar"><div class="bar-row"><span>Archivio prestazioni</span><strong id="servicesCount">—</strong></div><p class="panel-subtitle">Descrizione, prezzo e durata usati nei preventivi e negli appuntamenti.</p><button class="btn primary" type="button" data-open="serviceCatalog">Gestisci archivio prestazioni</button></div><div class="settings-doctors"><div class="panel-head"><div><h3>Archivio anagrafico dottori</h3><p class="panel-subtitle">Gestisci i professionisti selezionabili negli appuntamenti.</p></div><button class="btn" type="button" data-open="doctor">+ Nuovo dottore</button></div><div id="doctorsTable" class="table-wrap"></div></div></div><div class="panel"><div class="panel-head"><div><h3>Backup e intestazioni</h3><p class="panel-subtitle">Esporta una copia completa o ripristina un backup JSON.</p></div></div><div class="quick-actions"><button class="btn" id="exportBackup" type="button">Esporta backup JSON <span>↓</span></button><button class="btn" id="importBackup" type="button">Importa backup JSON <span>↑</span></button><input id="backupFile" type="file" accept="application/json,.json" hidden></div><div class="bar"><div class="bar-row"><span>Ultimo salvataggio locale</span><strong id="lastSave">—</strong></div><p class="panel-subtitle">Il backup contiene pazienti, appuntamenti, fatture e impostazioni dello studio.</p></div><div class="bar"><div class="bar-row"><span>Backup automatico su cartella</span><strong id="backupAutoStatus">Non configurato</strong></div><p class="panel-subtitle" id="backupAutoNote">Scegli una cartella sul computer dello studio: verrà salvata lì una copia di sicurezza ogni 2 ore di utilizzo, in aggiunta al backup manuale. Richiede Chrome o Edge su desktop.</p><div class="quick-actions"><button class="btn" id="setBackupFolder" type="button">Scegli cartella di backup</button><button class="btn" id="clearBackupFolder" type="button" hidden>Disattiva backup automatico</button></div></div></div></div></section>
+      <footer class="app-footer">© Fioravante Capaccio · v<span id="appVersion">1.0.3</span> · Ultimo aggiornamento: <span id="appUpdated">12 settembre 2026</span></footer>
+    </main>
+  </div>
+  <div id="modalBackdrop" class="modal-backdrop" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h3 id="modalTitle"></h3><button class="close" type="button" data-close aria-label="Chiudi">×</button></div><form id="modalForm"></form></div></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
+    const storeKey = 'denti-cura-demo-v1';
+    const defaultSettings = { studioName: 'Denti & Cura', doctorName: 'Dott. Mario Rossi', vat: '', address: '', city: '', phone: '', email: '', quoteFields: ['Descrizione trattamento', 'Note cliniche'], prescriptionList: ['Ortopantomografia', 'Teleradiografia del cranio', 'Radiografia endorale', 'TAC dentale (CBCT)', 'Risonanza magnetica'], doctors: [{ id: 1, name: 'Dott. Mario Rossi', specialty: 'Odontoiatria', license: '', phone: '', email: '', address: '' }], workFields: [{ id: 1, description: 'Prima visita', duration: '60 min' }, { id: 2, description: 'Igiene orale', duration: '45 min' }, { id: 3, description: 'Controllo + RX', duration: '30 min' }, { id: 4, description: 'Otturazione', duration: '60 min' }] };
+    const seed = {
+      appointments: [
+        { id: 1, date: '2026-09-10', time: '09:00', patient: 'Anna Bianchi', service: 'Igiene orale', duration: '45 min', doctor: 'Dott. Mario Rossi', status: 'confirmed' },
+        { id: 2, date: '2026-09-10', time: '10:00', patient: 'Luca Ferri', service: 'Controllo + RX', duration: '30 min', doctor: 'Dott. Mario Rossi', status: 'confirmed' },
+        { id: 3, date: '2026-09-10', time: '11:30', patient: 'Giulia Conti', service: 'Prima visita', duration: '60 min', doctor: 'Dott. Mario Rossi', status: 'pending' },
+        { id: 4, date: '2026-09-10', time: '14:30', patient: 'Marco Riva', service: 'Otturazione', duration: '60 min', doctor: 'Dott. Mario Rossi', status: 'confirmed' }
+      ],
+      patients: [
+        { id: 1, name: 'Anna Bianchi', phone: '+39 333 123 4567', email: 'anna.bianchi@email.it', last: '10 set 2026' },
+        { id: 2, name: 'Luca Ferri', phone: '+39 347 654 3210', email: 'luca.ferri@email.it', last: '02 set 2026' },
+        { id: 3, name: 'Giulia Conti', phone: '+39 320 111 2233', email: 'giulia.conti@email.it', last: '18 ago 2026' },
+        { id: 4, name: 'Marco Riva', phone: '+39 339 888 7766', email: 'marco.riva@email.it', last: '28 lug 2026' }
+      ],
+      invoices: [
+        { id: 'FT-2026-041', patient: 'Anna Bianchi', date: '10 set 2026', due: '10 ott 2026', amount: 120, status: 'paid' },
+        { id: 'FT-2026-040', patient: 'Luca Ferri', date: '02 set 2026', due: '02 ott 2026', amount: 85, status: 'pending' },
+        { id: 'FT-2026-039', patient: 'Elena Gallo', date: '12 ago 2026', due: '11 set 2026', amount: 420, status: 'overdue' }
+      ]
+    };
+    let data;
+    const isElectron = !!(window.desktopApp && window.desktopApp.isElectron);
+    async function loadData() {
+      let raw = null;
+      if (isElectron) { try { raw = await window.desktopApp.storage.load(); } catch (error) { raw = null; } }
+      else { raw = localStorage.getItem(storeKey); }
+      try { data = JSON.parse(raw || 'null') || seed; } catch (error) { data = seed; if (!isElectron) localStorage.removeItem(storeKey); }
+      migrateData();
+      save();
+    }
+    function migrateData() {
+    data.settings = { ...defaultSettings, ...(data.settings || {}) };
+    data.settings.quoteFields = Array.isArray(data.settings.quoteFields) ? data.settings.quoteFields.map(field => typeof field === 'string' ? { description: field, price: 0 } : { description: field.description || '', price: Number(field.price || 0) }) : defaultSettings.quoteFields.map(description => ({ description, price: 0 }));
+    data.settings.doctors = Array.isArray(data.settings.doctors) && data.settings.doctors.length ? data.settings.doctors : [...defaultSettings.doctors];
+    data.settings.workFields = Array.isArray(data.settings.workFields) && data.settings.workFields.length ? data.settings.workFields : [...defaultSettings.workFields];
+    data.settings.services = Array.isArray(data.settings.services) && data.settings.services.length
+      ? data.settings.services.map(item => ({ id: item.id || Date.now() + Math.random(), description: item.description || '', price: Number(item.price || 0), duration: item.duration || '' })).filter(item => item.description)
+      : data.settings.workFields.map((item, index) => ({ id: item.id || Date.now() + index, description: item.description, duration: item.duration || '', price: Number(data.settings.quoteFields[index]?.price || 0) }));
+    data.quotes = Array.isArray(data.quotes) ? data.quotes : [];
+    data.payments = Array.isArray(data.payments) ? data.payments : [];
+    data.patients = Array.isArray(data.patients) ? data.patients : [];
+    data.invoices = Array.isArray(data.invoices) ? data.invoices : [];
+    data.appointments = Array.isArray(data.appointments) ? data.appointments : [];
+    data.clinical = Array.isArray(data.clinical) ? data.clinical : [];
+    data.procedures = Array.isArray(data.procedures) ? data.procedures : [];
+    data.therapies = Array.isArray(data.therapies) ? data.therapies : [];
+    data.inventory = Array.isArray(data.inventory) ? data.inventory : [];
+    data.prescriptions = Array.isArray(data.prescriptions) ? data.prescriptions : [];
+    data.settings.prescriptionList = Array.isArray(data.settings.prescriptionList) && data.settings.prescriptionList.length ? data.settings.prescriptionList : [...defaultSettings.prescriptionList];
+    data.invoices = data.invoices.filter(invoice => !(invoice.residual || (invoice.partial && invoice.status === 'pending')));
+    data.invoices.forEach(invoice => { if (invoice.partial) invoice.status = 'paid'; });
+    }
+    let editing = null;
+    const money = value => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(value);
+    const escMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => escMap[ch]);
+    function nextInvoiceNumber() { const highest = data.invoices.reduce((max, invoice) => { const match = String(invoice.id || '').match(/^FT-\d{4}-(\d+)$/); return match ? Math.max(max, Number(match[1])) : max; }, 0); return `FT-2026-${String(highest + 1).padStart(3, '0')}`; }
+    function nextQuoteNumber() { const highest = data.quotes.reduce((max, quote) => { const match = String(quote.number || '').match(/^PR-\d{4}-(\d+)$/); return match ? Math.max(max, Number(match[1])) : max; }, 0); return `PR-2026-${String(highest + 1).padStart(3, '0')}`; }
+    function currentDateKey() { return dateKey(new Date()); }
+    const statusLabel = { confirmed: 'Confermato', pending: 'Da confermare', paid: 'Pagata', overdue: 'Scaduta' };
+    const invoiceStatusLabel = { pending: 'Da pagare', paid: 'Pagata', overdue: 'Scaduta' };
+    const monthFormatter = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' });
+    const dayFormatter = new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+    let calendarCursor = new Date(2026, 8, 1);
+    let selectedDate = '2026-09-10';
+    const save = () => {
+      const payload = JSON.stringify(data);
+      if (isElectron) { window.desktopApp.storage.save(payload).then(result => { if (result && result.ok === false) toast(`Salvataggio su file non riuscito: ${result.error || ''}`); }).catch(() => toast('Salvataggio su file non riuscito')); }
+      else { localStorage.setItem(storeKey, payload); }
+      const stamp = new Date().toLocaleString('it-IT');
+      const target = document.getElementById('lastSave');
+      if (target) target.textContent = stamp;
+    };
+    const toast = message => { const el = document.getElementById('toast'); el.textContent = message; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 2400); };
+    function appointmentMarkup(items) {
+      if (!items.length) return '<p class="empty">Nessun appuntamento trovato.</p>';
+      return items.map(item => `<div class="appointment"><div class="time">${esc(item.time)}</div><div class="patient">${esc(item.patient)}<small>${esc(item.service)} · ${esc(item.duration)}${item.doctor ? ` · ${esc(item.doctor)}` : ''}</small></div><span class="status ${item.status}">${statusLabel[item.status]}</span></div>`).join('');
+    }
+    function patientPicker(id, value = '') { return `<div class="patient-picker"><input id="${id}" name="patient" required autocomplete="off" value="${esc(value)}"><div class="patient-suggestions" role="listbox" aria-label="Suggerimenti pazienti"></div></div>`; }
+    function setupPatientAutocomplete() {
+      const input = document.querySelector('#modalForm input[name="patient"]');
+      if (!input) return;
+      const suggestions = input.parentElement.querySelector('.patient-suggestions');
+      const render = () => {
+        const query = input.value.trim().toLocaleLowerCase('it-IT');
+        const matches = data.patients.filter(patient => `${patient.name} ${patient.fiscalCode || ''} ${patient.phone || ''} ${patient.email || ''}`.toLocaleLowerCase('it-IT').includes(query)).slice(0, 8);
+        suggestions.innerHTML = matches.map(patient => `<button class="patient-suggestion" type="button" role="option" data-patient-value="${esc(patient.name)}">${esc(patient.name)}${patient.fiscalCode ? ` · ${esc(patient.fiscalCode)}` : ''}</button>`).join('');
+        suggestions.classList.toggle('open', matches.length > 0 && document.activeElement === input);
+      };
+      input.addEventListener('input', render);
+      input.addEventListener('focus', render);
+      input.addEventListener('blur', () => setTimeout(() => suggestions.classList.remove('open'), 120));
+      suggestions.addEventListener('mousedown', event => {
+        const option = event.target.closest('[data-patient-value]');
+        if (!option) return;
+        input.value = option.dataset.patientValue;
+        suggestions.classList.remove('open');
+      });
+    }
+    function workOptions(selected = '') { return data.settings.services.map(item => `<option value="${esc(item.description)}" data-duration="${esc(item.duration)}" ${item.description === selected ? 'selected' : ''}>${esc(item.description)} · ${esc(item.duration)}</option>`).join(''); }
+    function workDatalist() { return `<datalist id="workDescriptions">${data.settings.services.map(item => `<option value="${esc(item.description)}">${esc(item.duration)}</option>`).join('')}</datalist>`; }
+    function renderGreeting() {
+      const el = document.getElementById('dashboard-title');
+      if (!el) return;
+      const raw = String(data.settings.doctorName || '').trim();
+      if (!raw) { el.textContent = 'Buongiorno.'; return; }
+      const parts = raw.split(/\s+/);
+      if (parts.length === 1) { el.innerHTML = `Buongiorno, <em>${esc(parts[0])}</em>.`; return; }
+      const title = parts[0].replace(/\.$/, '').toLowerCase();
+      const surname = parts[parts.length - 1];
+      el.innerHTML = `Buongiorno, ${esc(title)}. <em>${esc(surname)}</em>.`;
+    }
+    function renderDashboard() { renderGreeting(); const today = currentDateKey(); const todayLabel = new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date()); const headerDate = document.querySelector('#dashboard .eyebrow'); if (headerDate) headerDate.textContent = todayLabel.charAt(0).toUpperCase() + todayLabel.slice(1); const todayAppointments = data.appointments.filter(item => item.date === today).sort((a, b) => a.time.localeCompare(b.time)); const pendingToday = todayAppointments.filter(item => item.status === 'pending').length; document.getElementById('dashboardAppointments').innerHTML = appointmentMarkup(todayAppointments.slice(0, 4)); document.getElementById('metricAppointments').textContent = todayAppointments.length; document.getElementById('metricAppointmentsNote').textContent = todayAppointments.length ? `${pendingToday} da confermare` : 'Nessun appuntamento oggi'; const paidInvoices = data.invoices.filter(invoice => invoice.status === 'paid'); const openInvoices = data.invoices.filter(invoice => invoice.status !== 'paid'); const revenue = paidInvoices.reduce((sum, invoice) => sum + Number(invoice.amount || 0), 0); const openAmount = openInvoices.reduce((sum, invoice) => sum + Number(invoice.amount || 0), 0); document.getElementById('metricRevenue').textContent = money(revenue); document.getElementById('metricRevenueNote').textContent = revenue ? `${paidInvoices.length} fattura/e pagata/e` : 'Nessun incasso registrato'; document.getElementById('metricOpen').textContent = openInvoices.length; document.getElementById('metricOpenNote').textContent = openInvoices.length ? `${money(openAmount)} da incassare` : 'Nessuna fattura da incassare'; const patientCount = data.patients.length; document.getElementById('metricPatients').textContent = patientCount; document.getElementById('metricPatientsNote').textContent = patientCount ? 'presenti in anagrafica' : 'Nessun paziente registrato'; }
+    function renderHeroNext() {
+      const el = document.getElementById('heroNext');
+      if (!el) return;
+      const today = currentDateKey();
+      const upcoming = [...data.appointments].filter(a => a.date >= today).sort((a, b) => a.date === b.date ? a.time.localeCompare(b.time) : a.date.localeCompare(b.date))[0];
+      const heroSvg = `<svg class="hero-img" viewBox="0 0 220 200" aria-hidden="true"><ellipse cx="85" cy="168" rx="44" ry="9" fill="#00000012"/><ellipse cx="172" cy="164" rx="18" ry="5" fill="#00000010"/><rect x="40" y="46" width="90" height="96" rx="12" fill="#ffffff" stroke="#2e5a8c" stroke-width="2"/><rect x="40" y="46" width="90" height="24" rx="12" fill="#2e5a8c"/><rect x="40" y="59" width="90" height="11" fill="#2e5a8c"/><rect x="58" y="36" width="6" height="20" rx="3" fill="#2e5a8c"/><rect x="106" y="36" width="6" height="20" rx="3" fill="#2e5a8c"/><circle cx="85" cy="106" r="17" fill="#dce8f5" stroke="#2e5a8c" stroke-width="2"/><g fill="#5c85b8"><circle cx="56" cy="88" r="3"/><circle cx="70" cy="88" r="3"/><circle cx="100" cy="88" r="3"/><circle cx="114" cy="88" r="3"/><circle cx="56" cy="126" r="3"/><circle cx="114" cy="126" r="3"/></g><path d="M150 140 h40 l-5 24a6 6 0 0 1-6 5h-18a6 6 0 0 1-6-5Z" fill="#2e5a8c"/><rect x="162" y="92" width="7" height="50" rx="3.5" fill="#eef4fb" stroke="#1a3653" stroke-width="1.5" transform="rotate(6 165 118)"/><rect x="158" y="86" width="15" height="16" rx="4" fill="#ffffff" stroke="#1a3653" stroke-width="1.5" transform="rotate(6 165 94)"/><path d="M188 54 l2.4 5.6 5.6 2.4-5.6 2.4-2.4 5.6-2.4-5.6-5.6-2.4 5.6-2.4Z" fill="#a9c3e3"/><path d="M42 34 l1.6 3.8 3.8 1.6-3.8 1.6-1.6 3.8-1.6-3.8-3.8-1.6 3.8-1.6Z" fill="#a9c3e3"/></svg>`;
+      if (!upcoming) {
+        el.innerHTML = `<div class="hero-copy"><h3>Nessun appuntamento in programma</h3><p>Prenota una visita per vederla qui.</p><button class="btn" type="button" data-open="appointment">+ Nuovo <span>→</span></button></div>${heroSvg}`;
+        return;
+      }
+      const apptDate = new Date(`${upcoming.date}T12:00:00`);
+      const dayNum = apptDate.getDate();
+      const monthShort = new Intl.DateTimeFormat('it-IT', { month: 'short' }).format(apptDate).replace('.', '').toUpperCase();
+      const isToday = upcoming.date === today;
+      el.innerHTML = `<div class="hero-copy"><div class="hero-date-row"><div class="hero-date-badge"><strong>${dayNum}</strong><small>${monthShort}</small></div><div><p class="hero-appt-title">${esc(upcoming.time)} · ${esc(upcoming.patient)}</p><p class="hero-appt-sub">${esc(upcoming.service)}${upcoming.doctor ? ' · ' + esc(upcoming.doctor) : ''}${isToday ? ' · oggi' : ''}</p></div></div><button class="btn" type="button" data-view-link="agenda">Vedi agenda <span>→</span></button></div>${heroSvg}`;
+    }
+    function dateKey(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
+    function renderCalendar() {
+      const grid = document.getElementById('calendarGrid');
+      if (!grid) return;
+      const year = calendarCursor.getFullYear();
+      const month = calendarCursor.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const startOffset = (firstDay.getDay() + 6) % 7;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const previousDays = new Date(year, month, 0).getDate();
+      const todayKey = currentDateKey();
+      const cells = [];
+      for (let index = 0; index < 42; index += 1) {
+        const dayOffset = index - startOffset + 1;
+        const isOutside = dayOffset < 1 || dayOffset > daysInMonth;
+        const day = isOutside ? (dayOffset < 1 ? previousDays + dayOffset : dayOffset - daysInMonth) : dayOffset;
+        const cellDate = new Date(year, month, dayOffset);
+        const key = dateKey(cellDate);
+        const items = data.appointments.filter(item => item.date === key);
+        const events = items.slice(0, 2).map(item => `<span class="day-event ${item.status === 'pending' ? 'pending' : ''}">${esc(item.time)} ${esc(item.patient)}</span>`).join('');
+        const more = items.length > 2 ? `<span class="day-more">+${items.length - 2} altri</span>` : '';
+        cells.push(`<button class="calendar-day ${isOutside ? 'outside' : ''} ${key === todayKey ? 'today' : ''} ${key === selectedDate ? 'selected' : ''}" type="button" data-date="${key}" role="gridcell" aria-label="${dayFormatter.format(cellDate)}${items.length ? `, ${items.length} appuntamenti` : ''}"><span class="day-number">${day}</span><span class="day-events">${events}${more}</span></button>`);
+      }
+      document.getElementById('calendarTitle').textContent = monthFormatter.format(calendarCursor);
+      grid.innerHTML = cells.join('');
+      renderDayDetail();
+    }
+    function renderDayDetail() {
+      const detail = document.getElementById('dayDetail');
+      if (!detail) return;
+      const date = new Date(`${selectedDate}T12:00:00`);
+      const items = data.appointments.filter(item => item.date === selectedDate).sort((a, b) => a.time.localeCompare(b.time));
+      detail.innerHTML = `<h4>${dayFormatter.format(date)}</h4>${items.length ? `<div class="agenda-list">${appointmentMarkup(items)}</div>` : '<p class="empty">Nessun appuntamento programmato per questo giorno.</p>'}`;
+    }
+    function openDayTimeline(dateKeyValue) {
+      const date = new Date(`${dateKeyValue}T12:00:00`);
+      const items = data.appointments.filter(item => item.date === dateKeyValue).sort((a, b) => a.time.localeCompare(b.time));
+      const startHour = 8;
+      const pixelsPerMinute = 64 / 60;
+      const parseMinutes = value => { const [hours, minutes] = String(value || '00:00').split(':').map(Number); return (hours * 60) + minutes; };
+      const durationMinutes = value => { const match = String(value || '').match(/\d+/); return match ? Number(match[0]) : 60; };
+      document.getElementById('modalTitle').textContent = `Agenda · ${dayFormatter.format(date)}`;
+      document.getElementById('modalForm').innerHTML = items.length ? `<div class="day-timeline"><div class="timeline-hours">${Array.from({ length: 13 }, (_, index) => `<div class="timeline-hour">${String(startHour + index).padStart(2, '0')}:00</div>`).join('')}</div><div class="timeline-canvas">${items.map(item => { const start = parseMinutes(item.time); const top = Math.max(0, (start - (startHour * 60)) * pixelsPerMinute); const height = Math.max(28, durationMinutes(item.duration) * pixelsPerMinute); const end = start + durationMinutes(item.duration); return `<div class="timeline-event ${item.status === 'pending' ? 'pending' : ''}" style="top:${top}px;height:${height}px" title="${esc(item.patient)} · ${esc(item.service)}"><strong>${esc(item.time)}–${String(Math.floor(end / 60)).padStart(2, '0')}:${String(end % 60).padStart(2, '0')} · ${esc(item.patient)}</strong><small>${esc(item.service)}${item.doctor ? ` · ${esc(item.doctor)}` : ''}</small></div>`; }).join('')}</div></div><div class="modal-actions"><button class="btn" type="button" data-close>Chiudi</button></div>` : '<p class="empty">Nessun appuntamento programmato per questo giorno.</p><div class="modal-actions"><button class="btn" type="button" data-close>Chiudi</button></div>';
+      document.getElementById('modalBackdrop').classList.add('open');
+    }
+    function renderAgenda() {
+      const query = (document.getElementById('appointmentSearch')?.value || '').toLowerCase();
+      const filter = document.getElementById('appointmentFilter')?.value || 'all';
+      const items = data.appointments.filter(a => (filter === 'all' || a.status === filter) && `${a.patient} ${a.service} ${a.doctor || ''}`.toLowerCase().includes(query));
+      document.getElementById('agendaTable').innerHTML = `<table class="data-table"><caption class="eyebrow">Appuntamenti registrati</caption><thead><tr><th>Data</th><th>Paziente</th><th>Prestazione</th><th>Dottore</th><th>Stato</th><th>Azioni</th></tr></thead><tbody>${items.map(a => `<tr><td>${esc(a.date)} · <strong>${esc(a.time)}</strong></td><td>${esc(a.patient)}</td><td>${esc(a.service)}<br><small>${esc(a.duration)}</small></td><td>${esc(a.doctor) || '—'}</td><td><span class="status ${a.status}">${statusLabel[a.status]}</span></td><td><button class="btn table-action" type="button" data-edit="appointment" data-id="${a.id}">Modifica</button> <button class="btn table-action" type="button" data-delete="appointment" data-id="${a.id}">Cancella</button></td></tr>`).join('')}</tbody></table>`;
+    }
+    function renderPatients() {
+      const query = (document.getElementById('patientSearch')?.value || '').toLowerCase();
+      const items = data.patients.filter(p => `${p.name} ${p.fiscalCode || ''} ${p.phone} ${p.email} ${p.city || ''}`.toLowerCase().includes(query));
+      document.getElementById('patientsTable').innerHTML = `<table class="data-table"><caption class="eyebrow">Anagrafica pazienti</caption><thead><tr><th>Paziente</th><th>Dati fiscali</th><th>Contatti e residenza</th><th>Ultima visita</th><th>Preventivo / pagamenti</th><th>Azioni</th></tr></thead><tbody>${items.map(p => { const t = patientTotals(p.name); return `<tr><td><strong>${esc(p.name)}</strong><br><small>${esc(p.birthDate) || 'Data di nascita non indicata'}${p.birthPlace ? ` · ${esc(p.birthPlace)}` : ''}</small></td><td><strong>${esc(p.fiscalCode) || '—'}</strong></td><td>${esc(p.phone) || '—'}<br><small>${esc(p.email)}</small><br><small>${[p.address, p.postalCode, p.city, p.province].map(v => esc(v)).filter(Boolean).join(', ') || 'Residenza non indicata'}</small></td><td>${esc(p.last)}</td><td>${t.total ? `${money(t.paid)} / ${money(t.total)}<br><small class="quote-balance">Residuo ${money(t.balance)}</small>` : '<small>Nessun preventivo</small>'}</td><td><button class="btn table-action" type="button" data-edit="patientWork" data-id="${p.id}">Lavoro effettuato</button> <button class="btn table-action" type="button" data-edit="patientClinical" data-id="${p.id}">Cartella clinica</button> <button class="btn table-action" type="button" data-edit="patient" data-id="${p.id}">Modifica</button> <button class="btn table-action" type="button" data-pay="${esc(p.name)}">Pagamento</button> <button class="btn table-action" type="button" data-delete="patient" data-id="${p.id}">Cancella</button></td></tr>`; }).join('')}</tbody></table>`;
+    }
+    function renderInvoices() {
+      const query = (document.getElementById('invoiceSearch')?.value || '').toLowerCase();
+      const filter = document.getElementById('invoiceFilter')?.value || 'all';
+      const items = data.invoices.filter(i => (filter === 'all' || i.status === filter) && `${i.id} ${i.patient}`.toLowerCase().includes(query));
+      document.getElementById('invoicesTable').innerHTML = `<table class="data-table"><caption class="eyebrow">Registro fatture</caption><thead><tr><th>Numero</th><th>Paziente</th><th>Scadenza</th><th>Importo</th><th>Stato</th><th>Azioni</th></tr></thead><tbody>${items.map(i => `<tr><td><strong>${esc(i.id)}</strong><br><small>${esc(i.date)}</small>${i.partial ? '<br><small>Pagamento parziale</small>' : ''}</td><td>${esc(i.patient)}</td><td>${esc(i.due)}</td><td>${money(i.amount)}</td><td><span class="status ${i.status}">${invoiceStatusLabel[i.status]}</span></td><td><button class="btn table-action" type="button" data-edit="invoice" data-id="${i.id}">Modifica</button> <button class="btn table-action" type="button" data-print-invoice="${i.id}">Stampa</button> <button class="btn table-action" type="button" data-delete="invoice" data-id="${i.id}">Cancella</button></td></tr>`).join('')}</tbody></table>`;
+    }
+    function quoteTotals(quote) { const payments = quote ? data.payments.filter(payment => String(payment.quoteId) === String(quote.id)) : []; const total = Number(quote?.total || 0); const paid = payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0); return { total, paid, balance: Math.max(0, total - paid) }; }
+    function patientTotals(name) { const quotes = data.quotes.filter(q => q.patient === name); const total = quotes.reduce((sum, quote) => sum + quoteTotals(quote).total, 0); const paid = quotes.reduce((sum, quote) => sum + quoteTotals(quote).paid, 0); return { total, paid, balance: Math.max(0, total - paid) }; }
+    function renderQuotes() { const query = (document.getElementById('quoteSearch')?.value || '').toLowerCase(); const items = data.quotes.filter(q => `${q.number} ${q.patient}`.toLowerCase().includes(query)); const rows = items.map(q => { const t = quoteTotals(q); const invoices = data.invoices.filter(invoice => String(invoice.quoteId) === String(q.id)); const payments = data.payments.filter(payment => String(payment.quoteId) === String(q.id)); const percent = t.total ? Math.min(100, Math.round((t.paid / t.total) * 100)) : 0; const itemsList = q.items?.length ? q.items : (q.service ? [{ description: q.service }] : []); const completedCount = itemsList.filter(item => item.completed).length; const visibleItems = itemsList.slice(0, 2).map(item => `<div class="quote-item-line">${item.completed ? '<span class="quote-check done">✓</span>' : '<span class="quote-check">○</span>'} ${esc(item.description) || '—'}${item.tooth ? ` <small>· dente ${esc(item.tooth)}</small>` : ''}</div>`).join(''); const moreItems = itemsList.length > 2 ? `<small class="quote-more">+${itemsList.length - 2} altre prestazioni</small>` : ''; const docsRows = [...invoices.map(invoice => `<div class="quote-doc-row"><span>Fattura <strong>${esc(invoice.id)}</strong> · ${money(invoice.amount)}</span><button class="btn-icon" type="button" data-delete="invoice" data-id="${invoice.id}" title="Elimina fattura" aria-label="Elimina fattura ${esc(invoice.id)}">×</button></div>`), ...payments.map(payment => `<div class="quote-doc-row"><span>Pagamento <strong>${money(payment.amount)}</strong> · ${esc(payment.date)}</span><button class="btn-icon" type="button" data-delete="payment" data-id="${payment.id}" title="Elimina pagamento" aria-label="Elimina pagamento del ${esc(payment.date)}">×</button></div>`)].join(''); return `<tr><td><strong>${esc(q.number)}</strong><br><small>${esc(q.date)}</small></td><td>${esc(q.patient)}</td><td>${visibleItems || '—'}${moreItems}${itemsList.length ? `<small class="quote-progress-label">${completedCount}/${itemsList.length} completate</small>` : ''}</td><td class="quote-amount-cell"><strong>${money(t.total)}</strong><div class="progress small"><span style="width:${percent}%"></span></div>${t.balance > 0 ? `<span class="tag balance">Residuo ${money(t.balance)}</span>` : '<span class="tag settled">Saldato</span>'}</td><td>${docsRows || '<small class="quote-more">Nessun documento collegato</small>'}</td><td class="quote-actions-cell"><button class="btn table-action" type="button" data-edit="quote" data-id="${q.id}">Modifica</button> <button class="btn table-action" type="button" data-pay="${esc(q.patient)}" data-pay-quote="${q.id}">Pagamento</button> <button class="btn table-action" type="button" data-print-quote="${q.id}">Stampa</button> <button class="btn table-action" type="button" data-delete="quote" data-id="${q.id}">Cancella</button></td></tr>`; }).join(''); document.getElementById('quotesTable').innerHTML = `<table class="data-table quotes-table"><caption class="eyebrow">Preventivi dello studio</caption><thead><tr><th>Preventivo</th><th>Paziente</th><th>Prestazioni</th><th>Importo</th><th>Documenti</th><th>Azioni</th></tr></thead><tbody>${rows || '<tr><td colspan="6"><p class="empty">Nessun preventivo trovato.</p></td></tr>'}</tbody></table>`; }
+    function renderPatientPayments(name) { const t = patientTotals(name); const payments = data.payments.filter(p => p.patient === name); return `<div class="bar"><div class="bar-row"><span>Preventivo</span><strong>${money(t.total)}</strong></div><div class="bar-row"><span>Pagato</span><strong>${money(t.paid)}</strong></div><div class="bar-row"><span>Residuo</span><strong class="quote-balance">${money(t.balance)}</strong></div>${payments.length ? `<p class="panel-subtitle">${payments.length} pagamento/i registrato/i</p>` : ''}</div>`; }
+    function renderDoctors() { const target = document.getElementById('doctorsTable'); if (!target) return; target.innerHTML = `<table class="doctor-table"><caption class="eyebrow">Archivio dottori</caption><thead><tr><th>Dottore</th><th>Specializzazione</th><th>Contatti</th><th>Azioni</th></tr></thead><tbody>${data.settings.doctors.map(d => `<tr><td><strong>${esc(d.name)}</strong><br><small>${esc(d.license) || 'Albo non indicato'}</small></td><td>${esc(d.specialty) || '—'}</td><td>${esc(d.phone) || '—'}<br><small>${esc(d.email)}</small></td><td><button class="btn table-action" type="button" data-edit="doctor" data-id="${d.id}">Modifica</button> <button class="btn table-action" type="button" data-delete="doctor" data-id="${d.id}">Cancella</button></td></tr>`).join('')}</tbody></table>`; const count = document.getElementById('servicesCount'); if (count) count.textContent = `${data.settings.services.length} configurate`; }
+    function renderQuoteCatalog() { const target = document.getElementById('quoteCatalog'); if (!target) return; target.innerHTML = data.settings.quoteFields.map((field, index) => `<div class="quote-catalog-row"><input name="catalogDescription" aria-label="Descrizione prestazione ${index + 1}" value="${esc(field.description)}" required><input name="catalogPrice" aria-label="Prezzo prestazione ${index + 1}" type="number" min="0" step=".01" value="${Number(field.price || 0)}" required><button class="btn table-action" type="button" data-remove-catalog>Rimuovi</button></div>`).join(''); }
+    const archiveConfig = {
+      clinical: { target: 'clinicalTable', search: 'clinicalSearch', title: 'Schede cliniche', columns: ['Paziente', 'Parametri', 'Anamnesi medica', 'Stato dentale', 'Consenso'], fields: [['patient', 'Paziente', 'patient'], ['weight', 'Peso (kg)', 'number'], ['height', 'Altezza (cm)', 'number'], ['bloodGroup', 'Gruppo sanguigno', 'bloodGroup'], ['medicalHistory', 'Anamnesi medica', 'textarea'], ['dentalStatus', 'Stato dentale', 'textarea'], ['consent', 'Consenso privacy', 'checkbox']] },
+      therapies: { target: 'therapiesTable', search: 'therapySearch', title: 'Terapie dentali', columns: ['Paziente', 'Terapia', 'Inizio', 'Fine', 'Costo'], fields: [['patient', 'Paziente', 'patient'], ['therapy', 'Tipo di terapia', 'textarea'], ['start', 'Data inizio', 'date'], ['end', 'Data completamento', 'date'], ['cost', 'Costo complessivo (€)', 'number']] },
+      inventory: { target: 'inventoryTable', search: 'inventorySearch', title: 'Inventario prodotti e prestazioni', columns: ['Codice', 'Articolo', 'Categoria', 'Fornitore', 'Giacenza', 'Valore'], fields: [['code', 'Codice articolo', 'text'], ['description', 'Descrizione', 'text'], ['category', 'Categoria', 'text'], ['brand', 'Marca e modello', 'text'], ['accessories', 'Elementi accessori', 'text'], ['supplier', 'Fornitore e recapiti', 'text'], ['purchaseDate', 'Data acquisto', 'date'], ['purchaseDocument', 'Documento acquisto', 'text'], ['location', 'Ubicazione', 'text'], ['stock', 'Giacenza', 'number'], ['cost', 'Costo unitario (€)', 'number'], ['notes', 'Note', 'textarea']] },
+      prescriptions: { target: 'prescriptionsTable', search: 'prescriptionSearch', title: 'Prescrizioni esami', columns: ['Data', 'Paziente', 'Esami richiesti', 'Note'], fields: [['year', 'Anno', 'number'], ['date', 'Data', 'date'], ['patient', 'Paziente', 'patient'], ['exams', 'Esami richiesti', 'textarea'], ['notes', 'Note', 'textarea'], ['attachments', 'Allegati', 'textarea']] },
+    };
+    function renderArchive(type) {
+      const config = archiveConfig[type]; const target = document.getElementById(config.target); if (!target) return;
+      const query = (document.getElementById(config.search)?.value || '').toLocaleLowerCase('it-IT');
+      let items = data[type].filter(item => JSON.stringify(item).toLocaleLowerCase('it-IT').includes(query));
+      if (type === 'inventory' && window.inventoryFilter === 'low') items = items.filter(item => Number(item.stock || 0) <= 2);
+      const rows = items.map(item => { const total = type === 'inventory' ? Number(item.stock || 0) * Number(item.cost || 0) : 0;       const values = type === 'clinical' ? [esc(item.patient) || '—', `${esc(item.weight) || '—'} kg · ${esc(item.height) || '—'} cm · ${esc(item.bloodGroup) || '—'}`, esc(item.medicalHistory) || '—', esc(item.dentalStatus) || '—', item.consent ? 'Acquisito' : 'Da acquisire'] : type === 'procedures' ? [`${esc(item.date) || ''} ${esc(item.time) || ''}`, esc(item.patient) || '—', esc(item.service) || '—', esc(item.tooth) || '—', money(item.amount || 0)] : type === 'therapies' ? [esc(item.patient) || '—', esc(item.therapy) || '—', esc(item.start) || '—', esc(item.end) || '—', money(item.cost || 0)] : type === 'inventory' ? [esc(item.code) || '—', `${esc(item.description) || '—'}<br><small>${esc(item.brand) || ''}</small>`, esc(item.category) || '—', esc(item.supplier) || '—', item.stock || 0, money(total)] : [esc(item.date) || '—', esc(item.patient) || '—', esc(item.exams) || '—', esc(item.notes) || '—']; const printButton = type === 'prescriptions' ? ` <button class="btn table-action" data-print-prescription="${item.id}">Stampa</button>` : ''; return `<tr>${values.map(value => `<td>${value}</td>`).join('')}<td><button class="btn table-action" data-edit="${type === 'procedures' ? 'procedure' : type === 'therapies' ? 'therapy' : type === 'inventory' ? 'inventory' : type === 'prescriptions' ? 'prescription' : 'clinical'}" data-id="${item.id}">Modifica</button>${printButton} <button class="btn table-action" data-delete="${type}" data-id="${item.id}">Cancella</button></td></tr>`; }).join('');
+      target.innerHTML = `<table class="data-table"><caption class="eyebrow">${config.title}</caption><thead><tr>${config.columns.map(column => `<th>${column}</th>`).join('')}<th>Azioni</th></tr></thead><tbody>${rows || `<tr><td colspan="${config.columns.length + 1}"><p class="empty">Nessun elemento trovato.</p></td></tr>`}</tbody></table>`;
+    }
+    const monthAbbr = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
+    function parseAppDate(value) {
+      const str = String(value || '').trim();
+      if (!str) return null;
+      const iso = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+      const it = str.match(/^(\d{1,2})\s+([a-zà-ù]{3})\.?\s+(\d{4})$/i);
+      if (it) { const monthIndex = monthAbbr.indexOf(it[2].toLowerCase()); if (monthIndex !== -1) return new Date(Number(it[3]), monthIndex, Number(it[1])); }
+      const fallback = new Date(str);
+      return isNaN(fallback.getTime()) ? null : fallback;
+    }
+    function renderRevenueChart() {
+      const el = document.getElementById('statsRevenueChart');
+      if (!el) return;
+      const now = new Date();
+      const months = [];
+      for (let i = 5; i >= 0; i -= 1) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); months.push({ year: d.getFullYear(), month: d.getMonth(), total: 0 }); }
+      data.invoices.filter(invoice => invoice.status === 'paid').forEach(invoice => {
+        const d = parseAppDate(invoice.date);
+        if (!d) return;
+        const match = months.find(m => m.year === d.getFullYear() && m.month === d.getMonth());
+        if (match) match.total += Number(invoice.amount || 0);
+      });
+      const hasData = months.some(m => m.total > 0);
+      if (!hasData) { el.innerHTML = '<p class="empty">Nessun incasso registrato negli ultimi 6 mesi.</p>'; return; }
+      const style = getComputedStyle(document.documentElement);
+      const colorAccent = style.getPropertyValue('--teal').trim() || '#6b4e9c';
+      const colorLine = style.getPropertyValue('--line').trim() || '#ece2cd';
+      const colorMuted = style.getPropertyValue('--muted').trim() || '#8b8270';
+      const colorInk = style.getPropertyValue('--ink').trim() || '#1c1912';
+      const width = 640, height = 220, padBottom = 36, padTop = 26, gap = 20;
+      const barWidth = (width - gap * (months.length + 1)) / months.length;
+      const max = Math.max(1, ...months.map(m => m.total));
+      const bars = months.map((m, index) => {
+        const x = gap + index * (barWidth + gap);
+        const barHeight = m.total ? Math.max(3, (m.total / max) * (height - padBottom - padTop)) : 0;
+        const y = height - padBottom - barHeight;
+        const label = `${monthAbbr[m.month]} '${String(m.year).slice(2)}`;
+        return `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="6" fill="${m.total ? colorAccent : colorLine}"></rect><text x="${x + barWidth / 2}" y="${y - 8}" text-anchor="middle" font-size="11" font-weight="700" fill="${colorInk}">${m.total ? money(m.total) : ''}</text><text x="${x + barWidth / 2}" y="${height - padBottom + 18}" text-anchor="middle" font-size="11" fill="${colorMuted}">${label}</text>`;
+      }).join('');
+      el.innerHTML = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Incassi mensili degli ultimi 6 mesi"><line x1="0" y1="${height - padBottom}" x2="${width}" y2="${height - padBottom}" stroke="${colorLine}" stroke-width="1"></line>${bars}</svg>`;
+    }
+    function renderStatistics() {
+      renderRevenueChart();
+      const metricsEl = document.getElementById('statsMetrics');
+      if (!metricsEl) return;
+      const paidInvoices = data.invoices.filter(invoice => invoice.status === 'paid');
+      const openInvoices = data.invoices.filter(invoice => invoice.status !== 'paid');
+      const totalCollected = paidInvoices.reduce((sum, invoice) => sum + Number(invoice.amount || 0), 0);
+      const totalOpen = openInvoices.reduce((sum, invoice) => sum + Number(invoice.amount || 0), 0);
+      const quoteBalance = data.quotes.reduce((sum, quote) => sum + quoteTotals(quote).balance, 0);
+      const paymentsCount = data.payments.length;
+      const avgPayment = paymentsCount ? data.payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0) / paymentsCount : 0;
+      metricsEl.innerHTML = `<div class="metric c2"><span class="metric-label">Incassato totale</span><strong>${money(totalCollected)}</strong><small>${paidInvoices.length} fattura/e pagata/e</small></div><div class="metric c4"><span class="metric-label">Da incassare</span><strong>${money(totalOpen)}</strong><small>${openInvoices.length} fattura/e aperta/e</small></div><div class="metric c1"><span class="metric-label">Residuo sui preventivi</span><strong>${money(quoteBalance)}</strong><small>${data.quotes.length} preventivo/i totali</small></div><div class="metric c3"><span class="metric-label">Pagamenti registrati</span><strong>${paymentsCount}</strong><small>${paymentsCount ? `Media ${money(avgPayment)}` : 'Nessun pagamento'}</small></div>`;
+      const serviceCounts = {};
+      data.appointments.forEach(item => { const key = item.service || 'Non specificata'; serviceCounts[key] = (serviceCounts[key] || 0) + 1; });
+      const topServices = Object.entries(serviceCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      const servicesEl = document.getElementById('statsServicesTable');
+      if (servicesEl) servicesEl.innerHTML = topServices.length ? `<table class="data-table"><thead><tr><th>Prestazione</th><th>Appuntamenti</th></tr></thead><tbody>${topServices.map(([name, count]) => `<tr><td>${esc(name)}</td><td>${count}</td></tr>`).join('')}</tbody></table>` : '<p class="empty">Nessun appuntamento registrato.</p>';
+      const methodTotals = {};
+      data.payments.forEach(payment => { const key = payment.method || 'Non specificato'; if (!methodTotals[key]) methodTotals[key] = { count: 0, total: 0 }; methodTotals[key].count += 1; methodTotals[key].total += Number(payment.amount || 0); });
+      const methodEntries = Object.entries(methodTotals).sort((a, b) => b[1].total - a[1].total);
+      const maxMethodTotal = Math.max(1, ...methodEntries.map(([, value]) => value.total));
+      const methodsEl = document.getElementById('statsPaymentMethods');
+      if (methodsEl) methodsEl.innerHTML = methodEntries.length ? methodEntries.map(([name, value]) => `<div class="stats-method-row"><div class="stats-method-head"><span>${esc(name)}</span><strong>${money(value.total)}</strong></div><div class="progress small"><span style="width:${Math.round(value.total / maxMethodTotal * 100)}%"></span></div><small>${value.count} pagamento/i</small></div>`).join('') : '<p class="empty">Nessun pagamento registrato.</p>';
+      const revenueByService = {};
+      data.quotes.forEach(quote => { const items = quote.items?.length ? quote.items : (quote.service ? [{ description: quote.service, price: quote.total || 0 }] : []); items.forEach(item => { const key = item.description || 'Non specificata'; if (!revenueByService[key]) revenueByService[key] = { count: 0, total: 0 }; revenueByService[key].count += 1; revenueByService[key].total += Number(item.price || 0); }); });
+      const revenueEntries = Object.entries(revenueByService).sort((a, b) => b[1].total - a[1].total).slice(0, 10);
+      const revenueEl = document.getElementById('statsRevenueTable');
+      if (revenueEl) revenueEl.innerHTML = revenueEntries.length ? `<table class="data-table"><thead><tr><th>Prestazione</th><th>Volte preventivata</th><th>Valore totale</th><th>Valore medio</th></tr></thead><tbody>${revenueEntries.map(([name, value]) => `<tr><td>${esc(name)}</td><td>${value.count}</td><td>${money(value.total)}</td><td>${money(value.total / value.count)}</td></tr>`).join('')}</tbody></table>` : '<p class="empty">Nessun preventivo registrato.</p>';
+    }
+    function refresh() { renderDashboard(); renderHeroNext(); renderStatistics(); renderCalendar(); renderAgenda(); renderPatients(); renderInvoices(); renderQuotes(); renderDoctors(); renderQuoteCatalog(); Object.keys(archiveConfig).forEach(renderArchive); const today = currentDateKey(); const todayCount = data.appointments.filter(item => item.date === today).length; document.getElementById('agendaSubtitle').textContent = `${new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'long' }).format(new Date())} · ${todayCount} appuntamenti`; }
+    function showView(id) { document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === id)); document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.view === id)); refresh(); }
+    function closeModal() { document.getElementById('modalBackdrop').classList.remove('open'); document.getElementById('modalForm').innerHTML = ''; }
+    function openModal(type, id = null) {
+      editing = id;
+      const form = document.getElementById('modalForm');
+      if (type === 'patientWork') {
+        const patient = data.patients.find(item => String(item.id) === String(id));
+        const quotes = data.quotes.filter(item => item.patient === patient?.name);
+        document.getElementById('modalTitle').textContent = `Lavoro effettuato · ${patient?.name || 'Paziente'}`;
+        const quoteRows = quotes.flatMap(quote => (quote.items?.length ? quote.items : [{ description: quote.service || 'Prestazione del preventivo', price: quote.total || 0 }]).map((item, index) => `<label class="completed-work-row"><input type="checkbox" name="completedItem" value="${quote.id}:${index}" ${item.completed ? 'checked' : ''}><span>${item.completed ? '✓' : '○'} ${esc(item.description)}</span><small>${esc(quote.number)} · ${money(item.price)}</small></label>`));
+        form.innerHTML = `${quoteRows.length ? `<div class="settings-fields">${quoteRows.join('')}</div>` : '<p class="empty">Nessun preventivo presente per questo paziente.</p>'}<div class="modal-actions"><button class="btn" type="button" data-close>Chiudi</button><button class="btn primary">Salva lavori</button></div>`;
+        document.getElementById('modalBackdrop').classList.add('open');
+        return;
+      }
+      if (type === 'patientClinical') {
+        const patient = data.patients.find(item => String(item.id) === String(id));
+        const clinicalRecord = data.clinical.find(item => item.patient === patient?.name);
+        editing = clinicalRecord?.id || null;
+        type = 'clinical';
+        window.patientClinicalName = patient?.name || '';
+      }
+      const collection = type === 'invoice' ? data.invoices : type === 'quote' ? data.quotes : type === 'doctor' ? data.settings.doctors : type === 'clinical' ? data.clinical : data[`${type}s`];
+      const record = id === null ? null : collection.find(item => String(item.id) === String(id));
+      document.getElementById('modalBackdrop').classList.add('open');
+      if (type === 'quote') {
+        document.getElementById('modalTitle').textContent = record ? 'Modifica preventivo' : 'Nuovo preventivo';
+        const items = record?.items?.length ? record.items : [{ description: '', price: 0 }];
+        const itemRows = items.map(item => `<div class="settings-field-row quote-item-row"><input name="itemDescription" placeholder="Descrizione prestazione" value="${esc(item.description)}" list="quoteItemsList" required><select name="itemArch" aria-label="Arcata dentaria"><option value="">Arcata/dente</option><option value="superiore" ${item.arch === 'superiore' ? 'selected' : ''}>Arcata superiore</option><option value="inferiore" ${item.arch === 'inferiore' ? 'selected' : ''}>Arcata inferiore</option><option value="entrambe" ${item.arch === 'entrambe' ? 'selected' : ''}>Entrambe</option></select><input name="itemTooth" placeholder="Dente (es. 16)" value="${esc(item.tooth)}" maxlength="3" aria-label="Dente interessato"><input name="itemPrice" type="number" min="0" step=".01" placeholder="Prezzo (€)" value="${Number(item.price || 0)}" required><button type="button" class="btn table-action" data-remove-quote-item>Rimuovi</button></div>`).join('');
+        const options = data.settings.services.map(field => `<option value="${esc(field.description)}">${money(field.price)} · ${field.duration || 'durata non indicata'}</option>`).join('');
+        const upperTeeth = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
+        const lowerTeeth = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
+        const toothButtons = teeth => teeth.map(tooth => `<button type="button" class="tooth" data-tooth="${tooth}" aria-label="Dente ${tooth}">${tooth}</button>`).join('');
+        form.innerHTML = `<div class="form-grid"><div class="field full"><label for="qPatient">Paziente</label>${patientPicker('qPatient', record?.patient || '')}</div><div class="field"><label for="qDate">Data</label><input id="qDate" name="date" type="date" required value="${esc(record?.date) || new Date().toISOString().slice(0, 10)}"></div></div><section class="quote-custom-fields" aria-labelledby="quote-items-title"><h4 id="quote-items-title">Prestazioni e arcata dentaria</h4><p>Seleziona il dente direttamente sull’odontogramma oppure indica l’arcata nella riga della prestazione.</p><div class="dental-arch"><div class="arch-label">Arcata superiore · destra → sinistra</div><div class="arch-row">${toothButtons(upperTeeth)}</div><div class="arch-label">Linea mediana</div></div><div class="dental-arch lower"><div class="arch-label">Arcata inferiore · destra → sinistra</div><div class="arch-row">${toothButtons(lowerTeeth)}</div><small id="selectedTooth">Nessun dente selezionato</small></div><datalist id="quoteItemsList">${options}</datalist><div id="quoteItemsModal">${itemRows}</div><button type="button" class="btn" id="addQuoteItem">+ Aggiungi prestazione</button><div class="bar"><div class="bar-row"><span>Importo del preventivo</span><strong id="quoteTotalPreview">${money(items.reduce((sum, item) => sum + Number(item.price || 0), 0))}</strong></div></div><input id="qTotal" name="total" type="hidden" value="${items.reduce((sum, item) => sum + Number(item.price || 0), 0)}"></section><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">${record ? 'Salva modifiche' : 'Salva preventivo'}</button></div>`;
+        form.querySelector('#addQuoteItem').addEventListener('click', () => { const row = document.createElement('div'); row.className = 'settings-field-row quote-item-row'; row.innerHTML = '<input name="itemDescription" placeholder="Descrizione prestazione" list="quoteItemsList" required><select name="itemArch" aria-label="Arcata dentaria"><option value="">Arcata/dente</option><option value="superiore">Arcata superiore</option><option value="inferiore">Arcata inferiore</option><option value="entrambe">Entrambe</option></select><input name="itemTooth" placeholder="Dente (es. 16)" maxlength="3" aria-label="Dente interessato"><input name="itemPrice" type="number" min="0" step=".01" placeholder="Prezzo (€)" required><button type="button" class="btn table-action" data-remove-quote-item>Rimuovi</button>'; form.querySelector('#quoteItemsModal').appendChild(row); });
+        form.querySelectorAll('[data-tooth]').forEach(button => button.addEventListener('click', () => { form.querySelectorAll('.tooth').forEach(item => item.classList.remove('selected')); button.classList.add('selected'); form.querySelector('#selectedTooth').textContent = `Dente selezionato: ${button.dataset.tooth}`; const row = form.querySelector('.quote-item-row:last-child'); if (row) row.querySelector('[name="itemTooth"]').value = button.dataset.tooth; }));
+        const updateQuoteTotal = () => { const total = [...form.querySelectorAll('input[name="itemPrice"]')].reduce((sum, input) => sum + Number(input.value || 0), 0); form.querySelector('#qTotal').value = total; form.querySelector('#quoteTotalPreview').textContent = money(total); };
+        form.addEventListener('input', event => { if (event.target.matches('input[name="itemPrice"]')) updateQuoteTotal(); });
+        form.addEventListener('change', event => { if (event.target.matches('input[name="itemDescription"]')) { const item = data.settings.services.find(field => field.description === event.target.value); const priceInput = event.target.closest('.quote-item-row').querySelector('input[name="itemPrice"]'); if (item && (!priceInput.value || Number(priceInput.value) === 0)) priceInput.value = item.price; updateQuoteTotal(); } });
+        form.addEventListener('click', event => { if (event.target.closest('[data-remove-quote-item]')) { const rows = form.querySelectorAll('.quote-item-row'); if (rows.length > 1) event.target.closest('.quote-item-row').remove(); updateQuoteTotal(); } });
+      }
+      if (type === 'quoteFields') {
+        document.getElementById('modalTitle').textContent = 'Archivio prestazioni preventivi';
+        form.innerHTML = `<p class="panel-subtitle">Imposta in anticipo le prestazioni disponibili e il relativo prezzo.</p><div id="quoteFieldsModal" class="settings-fields">${data.settings.quoteFields.map((field, index) => `<div class="settings-field-row"><input name="quoteField" placeholder="Descrizione prestazione" aria-label="Descrizione prestazione ${index + 1}" value="${esc(field.description)}" required><input name="quotePrice" type="number" min="0" step=".01" placeholder="Prezzo (€)" aria-label="Prezzo prestazione ${index + 1}" value="${field.price}" required><button type="button" class="btn table-action" data-remove-quote-field>Rimuovi</button></div>`).join('')}</div><button type="button" class="btn" id="addQuoteField">+ Aggiungi prestazione</button><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">Salva archivio</button></div>`;
+        form.querySelector('#addQuoteField').addEventListener('click', () => { const row = document.createElement('div'); row.className = 'settings-field-row'; row.innerHTML = '<input name="quoteField" placeholder="Descrizione prestazione" required><input name="quotePrice" type="number" min="0" step=".01" placeholder="Prezzo (€)" required><button type="button" class="btn table-action" data-remove-quote-field>Rimuovi</button>'; form.querySelector('#quoteFieldsModal').appendChild(row); });
+        form.addEventListener('click', event => { const remove = event.target.closest('[data-remove-quote-field]'); if (remove) remove.closest('.settings-field-row').remove(); });
+      }
+      if (type === 'serviceCatalog') {
+        document.getElementById('modalTitle').textContent = 'Archivio prestazioni';
+        form.innerHTML = `<p class="panel-subtitle">Configura una sola volta descrizione, prezzo e durata. Le voci saranno disponibili nei preventivi e nei nuovi appuntamenti.</p><div id="serviceCatalogModal" class="settings-fields">${data.settings.services.map((item, index) => `<div class="settings-field-row service-catalog-row"><input name="serviceDescription" aria-label="Descrizione prestazione ${index + 1}" placeholder="Descrizione prestazione" value="${esc(item.description)}" required><input name="servicePrice" aria-label="Prezzo prestazione ${index + 1}" type="number" min="0" step=".01" placeholder="Prezzo (€)" value="${item.price}" required><input name="serviceDuration" aria-label="Durata prestazione ${index + 1}" placeholder="Durata (es. 45 min)" value="${esc(item.duration)}" required><button type="button" class="btn table-action" data-remove-service>Rimuovi</button></div>`).join('')}</div><button type="button" class="btn" id="addService">+ Aggiungi prestazione</button><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">Salva archivio</button></div>`;
+        form.querySelector('#addService').addEventListener('click', () => { const row = document.createElement('div'); row.className = 'settings-field-row service-catalog-row'; row.innerHTML = '<input name="serviceDescription" aria-label="Nuova descrizione prestazione" placeholder="Descrizione prestazione" required><input name="servicePrice" aria-label="Nuovo prezzo prestazione" type="number" min="0" step=".01" placeholder="Prezzo (€)" required><input name="serviceDuration" aria-label="Nuova durata prestazione" placeholder="Durata (es. 45 min)" required><button type="button" class="btn table-action" data-remove-service>Rimuovi</button>'; form.querySelector('#serviceCatalogModal').appendChild(row); row.querySelector('input').focus(); });
+        form.addEventListener('click', event => { if (event.target.closest('[data-remove-service]')) event.target.closest('.service-catalog-row').remove(); });
+      }
+      if (type === 'workFields') {
+        document.getElementById('modalTitle').textContent = 'Prestazioni e tempi stimati';
+        form.innerHTML = `<div id="workFieldsModal" class="settings-fields">${data.settings.workFields.map((item, index) => `<div class="settings-field-row"><input name="workDescription" placeholder="Descrizione lavoro" aria-label="Descrizione lavoro ${index + 1}" value="${esc(item.description)}" required><input name="workDuration" placeholder="Durata stimata" aria-label="Durata stimata ${index + 1}" value="${esc(item.duration)}" required><button type="button" class="btn table-action" data-remove-work-field>Rimuovi</button></div>`).join('')}</div><button type="button" class="btn" id="addWorkField">+ Aggiungi prestazione</button><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">Salva prestazioni</button></div>`;
+        form.querySelector('#addWorkField').addEventListener('click', () => { const row = document.createElement('div'); row.className = 'settings-field-row'; row.innerHTML = '<input name="workDescription" placeholder="Descrizione lavoro" required><input name="workDuration" placeholder="Durata stimata" required><button type="button" class="btn table-action" data-remove-work-field>Rimuovi</button>'; form.querySelector('#workFieldsModal').appendChild(row); });
+        form.addEventListener('click', event => { const remove = event.target.closest('[data-remove-work-field]'); if (remove) remove.closest('.settings-field-row').remove(); });
+      }
+      const archiveType = type === 'clinical' ? 'clinical' : type === 'procedure' ? 'procedures' : type === 'therapy' ? 'therapies' : type === 'inventory' ? 'inventory' : null;
+      if (archiveType) {
+        const config = archiveConfig[archiveType]; document.getElementById('modalTitle').textContent = `${record ? 'Modifica' : 'Nuova'} ${config.title.toLowerCase().replace('inventario prodotti e prestazioni', 'articolo')}`;
+        form.innerHTML = `<div class="form-grid">${config.fields.map(([name, label, kind]) => { if (kind === 'patient') return `<div class="field full"><label>${label}</label>${patientPicker(`archive-${name}`, record?.[name] || window.patientClinicalName || '')}</div>`; if (kind === 'quote') { const quotes = data.quotes.filter(quote => !record?.patient || quote.patient === record.patient); return `<div class="field"><label for="archive-${name}">${label}</label><select id="archive-${name}" name="${name}"><option value="">Nessun collegamento</option>${quotes.map(quote => `<option value="${quote.id}" ${String(record?.quoteId || '') === String(quote.id) ? 'selected' : ''}>${esc(quote.number)} · ${esc(quote.patient)} · ${money(quote.total)}</option>`).join('')}</select></div>`; } if (kind === 'quoteItem') return `<div class="field"><label for="archive-${name}">${label}</label><select id="archive-${name}" name="${name}"><option value="">Seleziona prima il preventivo</option></select></div>`; if (kind === 'bloodGroup') return `<div class="field"><label for="archive-${name}">${label}</label><select id="archive-${name}" name="${name}"><option value="">Non indicato</option>${['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', '0+', '0-'].map(group => `<option value="${group}" ${record?.[name] === group ? 'selected' : ''}>${group}</option>`).join('')}</select></div>`; if (kind === 'textarea') return `<div class="field full${archiveType === 'clinical' ? ' clinical-description' : ''}"><label for="archive-${name}">${label}</label><textarea id="archive-${name}" name="${name}">${esc(record?.[name])}</textarea></div>`; if (kind === 'checkbox') return `<div class="field full"><label><input type="checkbox" name="${name}" ${record?.[name] ? 'checked' : ''}> ${label}</label></div>`; if (kind === 'select') return `<div class="field"><label for="archive-${name}">${label}</label><select id="archive-${name}" name="${name}"><option value="pending">In sospeso</option><option value="paid">Saldata</option></select></div>`; return `<div class="field"><label for="archive-${name}">${label}</label><input id="archive-${name}" name="${name}" type="${kind}" value="${esc(record?.[name])}" ${name === 'patient' ? 'required' : ''}></div>`; }).join('')}</div><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">Salva</button></div>`;
+        if (type === 'procedure') {
+          const quoteSelect = form.querySelector('#archive-quoteId');
+          const itemSelect = form.querySelector('#archive-quoteItem');
+          const updateQuoteItems = () => { const quote = data.quotes.find(item => String(item.id) === String(quoteSelect.value)); const quoteItems = quote?.items?.length ? quote.items : (quote ? [{ description: quote.service || 'Prestazione del preventivo', price: quote.total || 0, tooth: '' }] : []); itemSelect.innerHTML = `<option value="">Seleziona voce</option>${quoteItems.map((item, index) => `<option value="${index}" ${String(record?.quoteItem ?? '') === String(index) ? 'selected' : ''}>${esc(item.description)} · ${money(item.price)}${item.tooth ? ` · dente ${esc(item.tooth)}` : ''}</option>`).join('')}`; };
+          quoteSelect.addEventListener('change', () => { const quote = data.quotes.find(item => String(item.id) === String(quoteSelect.value)); const patientInput = form.querySelector('[name="patient"]'); if (quote && patientInput) patientInput.value = quote.patient; updateQuoteItems(); });
+          updateQuoteItems();
+        }
+        setupPatientAutocomplete();
+      }
+      if (type === 'prescriptionList') {
+        document.getElementById('modalTitle').textContent = 'Elenco personalizzato esami';
+        form.innerHTML = `<div class="settings-fields" id="prescriptionListModal">${data.settings.prescriptionList.map(item => `<div class="settings-field-row"><input name="prescriptionItem" value="${esc(item)}" required><button type="button" class="btn table-action" data-remove-prescription>Rimuovi</button></div>`).join('')}</div><button type="button" class="btn" id="addPrescriptionItem">+ Aggiungi esame</button><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">Salva elenco</button></div>`;
+        form.querySelector('#addPrescriptionItem').addEventListener('click', () => { const row = document.createElement('div'); row.className = 'settings-field-row'; row.innerHTML = '<input name="prescriptionItem" required placeholder="Descrizione esame"><button type="button" class="btn table-action" data-remove-prescription>Rimuovi</button>'; form.querySelector('#prescriptionListModal').appendChild(row); });
+        form.addEventListener('click', event => { if (event.target.closest('[data-remove-prescription]')) event.target.closest('.settings-field-row').remove(); });
+      }
+      if (type === 'prescription') {
+        document.getElementById('modalTitle').textContent = record ? 'Modifica prescrizione esami' : 'Nuova prescrizione esami';
+        const selectedExams = String(record?.exams || '').split(',').map(item => item.trim()).filter(Boolean);
+        const examRows = selectedExams.length ? selectedExams : [''];
+        const examOptions = value => `<option value="">Seleziona esame</option>${data.settings.prescriptionList.map(item => `<option value="${esc(item)}" ${value === item ? 'selected' : ''}>${esc(item)}</option>`).join('')}`;
+        const renderExamRow = value => `<div class="settings-field-row prescription-exam-row"><select name="exam" aria-label="Esame da richiedere" required>${examOptions(value)}</select><button type="button" class="btn table-action" data-remove-exam>Rimuovi</button></div>`;
+        form.innerHTML = `<div class="form-grid"><div class="field full"><label for="prescriptionPatient">Anagrafica paziente</label>${patientPicker('prescriptionPatient', record?.patient || '')}</div><div class="field"><label for="prescriptionDate">Data prescrizione</label><input id="prescriptionDate" name="date" type="date" required value="${esc(record?.date) || new Date().toISOString().slice(0, 10)}"></div><div class="field full"><label>Elenco esami da richiedere</label><div id="prescriptionExams">${examRows.map(renderExamRow).join('')}</div><button type="button" class="btn" id="addPrescriptionExam">+ Aggiungi esame</button></div><div class="field full"><label for="prescriptionNotes">Note</label><textarea id="prescriptionNotes" name="notes">${esc(record?.notes)}</textarea></div></div><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">Salva prescrizione</button></div>`;
+        form.querySelector('#addPrescriptionExam').addEventListener('click', () => { const row = document.createElement('div'); row.innerHTML = renderExamRow(''); form.querySelector('#prescriptionExams').appendChild(row.firstElementChild); });
+        form.addEventListener('click', event => { if (event.target.closest('[data-remove-exam]')) { const rows = form.querySelectorAll('.prescription-exam-row'); if (rows.length > 1) event.target.closest('.prescription-exam-row').remove(); } });
+        setupPatientAutocomplete();
+      }
+      if (type === 'doctor') {
+        document.getElementById('modalTitle').textContent = record ? 'Modifica dottore' : 'Nuovo dottore';
+        form.innerHTML = `<div class="form-grid"><div class="field full"><label for="dName">Nome e cognome</label><input id="dName" name="name" required value="${esc(record?.name)}"></div><div class="field"><label for="dSpecialty">Specializzazione</label><input id="dSpecialty" name="specialty" value="${esc(record?.specialty)}"></div><div class="field"><label for="dLicense">Numero albo / qualifica</label><input id="dLicense" name="license" value="${esc(record?.license)}"></div><div class="field"><label for="dPhone">Telefono</label><input id="dPhone" name="phone" value="${esc(record?.phone)}"></div><div class="field"><label for="dEmail">Email</label><input id="dEmail" name="email" type="email" value="${esc(record?.email)}"></div><div class="field full"><label for="dAddress">Indirizzo professionale</label><input id="dAddress" name="address" value="${esc(record?.address)}"></div></div><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">${record ? 'Salva modifiche' : 'Salva dottore'}</button></div>`;
+      }
+      if (type === 'payment') {
+        const patient = id || '';
+        const quote = arguments[2] ? data.quotes.find(item => String(item.id) === String(arguments[2])) : data.quotes.find(item => item.patient === patient);
+        const quoteId = quote?.id || '';
+        const t = quote ? quoteTotals(quote) : patientTotals(patient);
+        document.getElementById('modalTitle').textContent = 'Registra pagamento parziale';
+        form.innerHTML = `<div class="form-grid"><input type="hidden" name="quoteId" value="${quoteId}"><div class="field full"><label for="payPatient">Paziente</label>${patientPicker('payPatient', patient)}</div><div class="field"><label for="payAmount">Importo (€)</label><input id="payAmount" name="amount" type="number" min="0" max="${t.balance || ''}" step=".01" required></div><div class="field"><label for="payDate">Data</label><input id="payDate" name="date" type="date" value="${new Date().toISOString().slice(0, 10)}" required></div><div class="field"><label for="payMethod">Metodo</label><select id="payMethod" name="method"><option>Bonifico</option><option>Contanti</option><option>POS</option><option>Assegno</option></select></div></div><div class="invoice-total"><span>Residuo prima del pagamento</span><strong>${money(t.balance)}</strong><small>La fattura dell’importo ricevuto verrà emessa automaticamente come già pagata. Il residuo resterà nel preventivo.</small></div><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">Registra pagamento e fattura</button></div>`;
+      }
+      if (type === 'patient') {
+        document.getElementById('modalTitle').textContent = record ? 'Modifica paziente' : 'Nuovo paziente';
+        form.innerHTML = `<div class="form-grid"><div class="field full"><label for="pName">Nome e cognome</label><input id="pName" name="name" required value="${esc(record?.name)}"></div><div class="field"><label for="pBirthDate">Data di nascita</label><input id="pBirthDate" name="birthDate" type="date" value="${esc(record?.birthDate)}"></div><div class="field"><label for="pBirthPlace">Luogo di nascita</label><input id="pBirthPlace" name="birthPlace" value="${esc(record?.birthPlace)}"></div><div class="field full"><label for="pFiscalCode">Codice fiscale</label><input id="pFiscalCode" name="fiscalCode" maxlength="16" style="text-transform:uppercase" value="${esc(record?.fiscalCode)}"></div><div class="field"><label for="pPhone">Telefono</label><input id="pPhone" name="phone" required value="${esc(record?.phone)}"></div><div class="field"><label for="pEmail">Email</label><input id="pEmail" name="email" type="email" value="${esc(record?.email)}"></div><div class="field full"><label for="pAddress">Indirizzo di residenza</label><input id="pAddress" name="address" value="${esc(record?.address)}"></div><div class="field"><label for="pPostalCode">CAP</label><input id="pPostalCode" name="postalCode" inputmode="numeric" value="${esc(record?.postalCode)}"></div><div class="field"><label for="pCity">Comune</label><input id="pCity" name="city" value="${esc(record?.city)}"></div><div class="field"><label for="pProvince">Provincia</label><input id="pProvince" name="province" maxlength="2" value="${esc(record?.province)}"></div>        <div class="field"><label for="pEmergency">Contatto di emergenza</label><input id="pEmergency" name="emergencyContact" value="${esc(record?.emergencyContact)}"></div><div class="field"><label for="pProfession">Professione</label><input id="pProfession" name="profession" value="${esc(record?.profession)}"></div><div class="field"><label for="pPreferredDays">Giorni preferiti</label><input id="pPreferredDays" name="preferredDays" placeholder="Lun, Mer" value="${esc(record?.preferredDays)}"></div><div class="field"><label for="pPreferredTime">Orari preferiti</label><input id="pPreferredTime" name="preferredTime" placeholder="09:00-12:00" value="${esc(record?.preferredTime)}"></div><div class="field"><label for="pPaymentMethod">Modalità di pagamento</label><input id="pPaymentMethod" name="paymentMethod" value="${esc(record?.paymentMethod)}"></div><div class="field"><label for="pHealthCard">Tessera sanitaria</label><input id="pHealthCard" name="healthCard" value="${esc(record?.healthCard)}"></div><div class="field"><label for="pDoctor">Medico curante</label><input id="pDoctor" name="familyDoctor" value="${esc(record?.familyDoctor)}"></div><div class="field"><label for="pVat">Partita IVA</label><input id="pVat" name="vatNumber" value="${esc(record?.vatNumber)}"></div><div class="field full"><label for="pNotes">Note anamnestiche</label><textarea id="pNotes" name="notes">${esc(record?.notes)}</textarea></div><div class="field full"><label for="pMedicalHistory">Anamnesi medica</label><textarea id="pMedicalHistory" name="medicalHistory" placeholder="Allergie, farmaci, patologie, terapie, raccomandazioni...">${esc(record?.medicalHistory)}</textarea></div>        <div class="field full"><label for="pDentalStatus">Stato dentale</label><textarea id="pDentalStatus" name="dentalStatus" placeholder="Annotazioni per dente o arcata...">${esc(record?.dentalStatus)}</textarea></div><div class="field full"><label for="pAttachments">Lastre, immagini e documenti</label><textarea id="pAttachments" name="attachments" placeholder="Descrivi i documenti associati al paziente...">${esc(record?.attachments)}</textarea></div><div class="field full"><label><input type="checkbox" name="consent" ${record?.consent ? 'checked' : ''}> Consenso al trattamento dei dati acquisito</label></div></div><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">${record ? 'Salva modifiche' : 'Salva paziente'}</button></div>`;
+      }
+      if (type === 'appointment') {
+        document.getElementById('modalTitle').textContent = record ? 'Modifica appuntamento' : 'Nuovo appuntamento';
+        form.innerHTML = `<div class="form-grid"><div class="field full"><label for="aPatient">Paziente</label>${patientPicker('aPatient', record?.patient || '')}</div><div class="field"><label for="aDate">Data</label><input id="aDate" name="date" type="date" required value="${esc(record?.date) || selectedDate}"></div><div class="field"><label for="aTime">Ora</label><input id="aTime" name="time" type="time" required value="${esc(record?.time)}"></div><div class="field"><label for="aService">Prestazione</label><input id="aService" name="service" list="appointmentServices" required placeholder="Scrivi o seleziona una prestazione" value="${esc(record?.service)}"><datalist id="appointmentServices">${data.settings.workFields.map(item => `<option value="${esc(item.description)}">${esc(item.duration)}</option>`).join('')}</datalist></div><div class="field"><label for="aDoctor">Dottore</label><select id="aDoctor" name="doctor" required>${data.settings.doctors.map(d => `<option>${esc(d.name)}</option>`).join('')}</select></div><div class="field"><label for="aDuration">Durata stimata</label><input id="aDuration" name="duration" required placeholder="Es. 45 min" value="${esc(record?.duration) || esc(data.settings.workFields.find(item => item.description === record?.service)?.duration)}"></div><div class="field"><label for="aStatus">Stato</label><select id="aStatus" name="status"><option value="confirmed">Confermato</option><option value="pending">Da confermare</option></select></div></div><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">${record ? 'Salva modifiche' : 'Salva appuntamento'}</button></div>`;
+        form.querySelector('#aService').addEventListener('change', event => { form.querySelector('#aDuration').value = data.settings.services.find(item => item.description === event.target.value)?.duration || ''; });
+        if (record) { form.querySelector('#aDoctor').value = record.doctor || data.settings.doctors[0]?.name || ''; form.querySelector('#aStatus').value = record.status; }
+      }
+      if (type === 'invoice') {
+        document.getElementById('modalTitle').textContent = record ? 'Modifica fattura' : 'Nuova fattura';
+        form.innerHTML = `<div class="form-grid"><div class="field full"><label for="iPatient">Paziente</label>${patientPicker('iPatient', record?.patient || '')}</div><div class="field"><label for="iDate">Data</label><input id="iDate" name="date" required value="${esc(record?.date) || '10 set 2026'}"></div><div class="field"><label for="iDue">Scadenza</label><input id="iDue" name="due" required value="${esc(record?.due) || '10 ott 2026'}"></div><div class="field"><label for="iAmount">Importo (€)</label><input id="iAmount" name="amount" type="number" min="0" step=".01" required value="${record?.amount || 120}"></div><div class="field"><label for="iStatus">Stato</label><select id="iStatus" name="status"><option value="paid">Pagata</option><option value="pending">Da pagare</option><option value="overdue">Scaduta</option></select></div></div><div class="invoice-total"><span>Totale documento</span><strong id="formTotal">${money(record?.amount || 120)}</strong></div><div class="modal-actions"><button class="btn" type="button" data-close>Annulla</button><button class="btn primary">${record ? 'Salva modifiche' : 'Emetti fattura'}</button></div>`;
+        form.querySelector('#iAmount').addEventListener('input', e => form.querySelector('#formTotal').textContent = money(Number(e.target.value || 0)));
+        if (record) form.querySelector('#iStatus').value = record.status;
+      }
+      setupPatientAutocomplete();
+      form.querySelector('input, select')?.focus();
+    }
+    function deleteRecord(type, id) { if (!window.confirm('Vuoi cancellare definitivamente questo elemento?')) return; if (['clinical', 'procedures', 'therapies', 'inventory', 'prescriptions'].includes(type)) data[type] = data[type].filter(item => String(item.id) !== String(id)); if (type === 'appointment') data.appointments = data.appointments.filter(item => String(item.id) !== String(id)); if (type === 'patient') { const patient = data.patients.find(item => String(item.id) === String(id)); data.patients = data.patients.filter(item => String(item.id) !== String(id)); if (patient) { data.quotes = data.quotes.filter(item => item.patient !== patient.name); data.payments = data.payments.filter(item => item.patient !== patient.name); data.invoices = data.invoices.filter(item => item.patient !== patient.name); } } if (type === 'invoice') { const invoice = data.invoices.find(item => String(item.id) === String(id)); data.invoices = data.invoices.filter(item => String(item.id) !== String(id)); if (invoice?.paymentId) data.payments = data.payments.filter(item => String(item.id) !== String(invoice.paymentId)); } if (type === 'payment') { const payment = data.payments.find(item => String(item.id) === String(id)); data.payments = data.payments.filter(item => String(item.id) !== String(id)); if (payment) data.invoices = data.invoices.filter(item => String(item.paymentId) !== String(id)); } if (type === 'quote') { data.quotes = data.quotes.filter(item => String(item.id) !== String(id)); data.payments = data.payments.filter(item => String(item.quoteId) !== String(id)); data.invoices = data.invoices.filter(item => String(item.quoteId) !== String(id)); } if (type === 'doctor') data.settings.doctors = data.settings.doctors.filter(item => String(item.id) !== String(id)); save(); refresh(); toast('Elemento cancellato'); }
+    document.addEventListener('click', event => { const viewButton = event.target.closest('[data-view]'); if (viewButton) showView(viewButton.dataset.view); const link = event.target.closest('[data-view-link]'); if (link) showView(link.dataset.viewLink); const opener = event.target.closest('[data-open]'); if (opener) openModal(opener.dataset.open); const edit = event.target.closest('[data-edit]'); if (edit) openModal(edit.dataset.edit, edit.dataset.id); const pay = event.target.closest('[data-pay]'); if (pay) openModal('payment', pay.dataset.pay, pay.dataset.payQuote); const remove = event.target.closest('[data-delete]'); if (remove) deleteRecord(remove.dataset.delete, remove.dataset.id); const printQuote = event.target.closest('[data-print-quote]'); if (printQuote) printQuoteById(printQuote.dataset.printQuote); const printPrescription = event.target.closest('[data-print-prescription]'); if (printPrescription) printPrescriptionById(printPrescription.dataset.printPrescription); const printInvoice = event.target.closest('[data-print-invoice]'); if (printInvoice) printInvoiceById(printInvoice.dataset.printInvoice); const day = event.target.closest('[data-date]'); if (day) { selectedDate = day.dataset.date; const date = new Date(`${selectedDate}T12:00:00`); calendarCursor = new Date(date.getFullYear(), date.getMonth(), 1); renderCalendar(); openDayTimeline(selectedDate); } const calendarButton = event.target.closest('[data-calendar]'); if (calendarButton) { if (calendarButton.dataset.calendar === 'prev') calendarCursor.setMonth(calendarCursor.getMonth() - 1); if (calendarButton.dataset.calendar === 'next') calendarCursor.setMonth(calendarCursor.getMonth() + 1); if (calendarButton.dataset.calendar === 'today') { calendarCursor = new Date(2026, 8, 1); selectedDate = '2026-09-10'; } renderCalendar(); } const print = event.target.closest('[data-print]'); if (print) window.print(); if (event.target.closest('[data-close]')) closeModal(); });
+    document.getElementById('modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalBackdrop') closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    document.getElementById('modalForm').addEventListener('submit', e => { e.preventDefault(); const fd = new FormData(e.target); const title = document.getElementById('modalTitle').textContent.toLowerCase(); if (title.includes('lavoro effettuato')) { const patient = data.patients.find(item => String(item.id) === String(editing)); const selected = new Set(fd.getAll('completedItem')); data.quotes.filter(quote => quote.patient === patient?.name).forEach(quote => { const items = quote.items?.length ? quote.items : [{ description: quote.service || 'Prestazione del preventivo', price: quote.total || 0 }]; items.forEach((item, index) => { item.completed = selected.has(`${quote.id}:${index}`); }); quote.items = items; quote.completedItems = items.filter(item => item.completed).length; }); } if (title.includes('prescrizione esami')) { const item = { id: editing || Date.now(), patient: fd.get('patient') || fd.get('prescriptionPatient') || '', date: fd.get('date'), exams: fd.getAll('exam').join(', '), notes: fd.get('notes') || '' }; if (editing) data.prescriptions = data.prescriptions.map(existing => String(existing.id) === String(editing) ? item : existing); else data.prescriptions.unshift(item); } if (title.includes('archivio prestazioni') && fd.getAll('serviceDescription').length) { const descriptions = fd.getAll('serviceDescription').map(value => String(value).trim()); const prices = fd.getAll('servicePrice'); const durations = fd.getAll('serviceDuration'); data.settings.services = descriptions.map((description, index) => ({ id: data.settings.services[index]?.id || Date.now() + index, description, price: Number(prices[index]) || 0, duration: String(durations[index] || '').trim() })).filter(item => item.description); data.settings.quoteFields = data.settings.services.map(item => ({ description: item.description, price: item.price })); data.settings.workFields = data.settings.services.map(item => ({ id: item.id, description: item.description, duration: item.duration })); } const genericType = title.includes('schede cliniche') ? 'clinical' : title.includes('prestazioni eseguite') ? 'procedures' : title.includes('terapie dentali') ? 'therapies' : title.includes('articolo') ? 'inventory' : title.includes('prescrizioni esami') ? 'prescriptions' : null; if (genericType) { const item = Object.fromEntries(fd.entries()); item.id = editing || Date.now(); if (genericType === 'clinical') item.consent = fd.get('consent') === 'on'; if (genericType === 'inventory') { item.stock = Number(item.stock || 0); item.cost = Number(item.cost || 0); }         if (genericType === 'procedures') { item.amount = Number(item.amount || 0); const quote = data.quotes.find(entry => String(entry.id) === String(item.quoteId)); const quoteItems = quote?.items?.length ? quote.items : (quote ? [{ description: quote.service || 'Prestazione del preventivo', price: quote.total || 0, tooth: '' }] : []); const quoteItem = quoteItems[Number(item.quoteItem)]; if (quoteItem) { item.service = quoteItem.description; item.tooth = quoteItem.tooth || item.tooth || ''; item.amount = Number(quoteItem.price || item.amount); if (quote?.items?.length) { quoteItem.completed = true; quote.completedItems = quote.items.filter(entry => entry.completed).length; } } } if (genericType === 'therapies') item.cost = Number(item.cost || 0); if (editing) data[genericType] = data[genericType].map(existing => String(existing.id) === String(editing) ? item : existing); else data[genericType].unshift(item);     } if (title.includes('elenco personalizzato esami')) { data.settings.prescriptionList = fd.getAll('prescriptionItem').map(value => String(value).trim()).filter(Boolean); } if (title.includes('prestazioni e tempi')) { const descriptions = fd.getAll('workDescription').map(value => String(value).trim()); const durations = fd.getAll('workDuration').map(value => String(value).trim()); data.settings.workFields = descriptions.map((description, index) => ({ id: data.settings.workFields[index]?.id || Date.now() + index, description, duration: durations[index] || '' })).filter(item => item.description && item.duration); }     if (title.includes('archivio prestazioni preventivi')) { const descriptions = fd.getAll('quoteField').map(value => String(value).trim()); const prices = fd.getAll('quotePrice').map(value => Number(value) || 0); data.settings.quoteFields = descriptions.map((description, index) => ({ description, price: prices[index] || 0 })).filter(item => item.description); } if (title.includes('preventivo')) {     const items = fd.getAll('itemDescription').map((description, index) => ({ description: String(description).trim(), arch: String(fd.getAll('itemArch')[index] || ''), tooth: String(fd.getAll('itemTooth')[index] || '').trim(), price: Number(fd.getAll('itemPrice')[index]) || 0 })).filter(item => item.description);     const item = { id: editing || Date.now(), number: editing ? data.quotes.find(q => String(q.id) === String(editing))?.number : nextQuoteNumber(), patient: fd.get('patient'), date: fd.get('date'), service: items.map(entry => entry.description).join(', '), items, total: items.reduce((sum, entry) => sum + entry.price, 0) }; if (editing) data.quotes = data.quotes.map(q => String(q.id) === String(editing) ? item : q); else data.quotes.unshift(item); }         if (title.includes('pagamento')) { const amount = Number(fd.get('amount')); const paymentId = Date.now(); const quoteId = fd.get('quoteId') || ''; const payment = { id: paymentId, patient: fd.get('patient'), quoteId, amount, date: fd.get('date'), method: fd.get('method') }; data.payments.unshift(payment); data.invoices.unshift({ id: nextInvoiceNumber(), patient: fd.get('patient'), quoteId, paymentId, date: fd.get('date'), due: fd.get('date'), amount, status: 'paid', partial: true }); } if (title.includes('paziente')) {         const item = { id: editing || Date.now(), name: fd.get('name'), birthDate: fd.get('birthDate'), birthPlace: fd.get('birthPlace'), fiscalCode: String(fd.get('fiscalCode') || '').trim().toUpperCase(), vatNumber: fd.get('vatNumber'), address: fd.get('address'), postalCode: fd.get('postalCode'), city: fd.get('city'), province: String(fd.get('province') || '').trim().toUpperCase(), phone: fd.get('phone'), email: fd.get('email'), emergencyContact: fd.get('emergencyContact'), profession: fd.get('profession'), preferredDays: fd.get('preferredDays'), preferredTime: fd.get('preferredTime'), paymentMethod: fd.get('paymentMethod'), healthCard: fd.get('healthCard'), familyDoctor: fd.get('familyDoctor'), notes: fd.get('notes'), medicalHistory: fd.get('medicalHistory'), dentalStatus: fd.get('dentalStatus'), attachments: fd.get('attachments'), consent: fd.get('consent') === 'on', last: editing ? data.patients.find(p => String(p.id) === String(editing))?.last || '—' : '—' }; if (editing) data.patients = data.patients.map(p => String(p.id) === String(editing) ? item : p); else data.patients.unshift(item); } if (title.includes('dottore')) { const item = { id: editing || Date.now(), name: fd.get('name'), specialty: fd.get('specialty'), license: fd.get('license'), phone: fd.get('phone'), email: fd.get('email'), address: fd.get('address') }; if (editing) data.settings.doctors = data.settings.doctors.map(d => String(d.id) === String(editing) ? item : d); else data.settings.doctors.unshift(item); } if (title.includes('appuntamento')) { const item = { id: editing || Date.now(), date: fd.get('date'), time: fd.get('time'), patient: fd.get('patient'), service: fd.get('service'), doctor: fd.get('doctor'), duration: fd.get('duration'), status: fd.get('status') || 'pending' }; if (editing) data.appointments = data.appointments.map(a => String(a.id) === String(editing) ? item : a); else data.appointments.push(item); } if (title.includes('fattura')) { const item = { id: editing || nextInvoiceNumber(), patient: fd.get('patient'), date: fd.get('date'), due: fd.get('due'), amount: Number(fd.get('amount')), status: fd.get('status') || 'pending' }; if (editing) data.invoices = data.invoices.map(i => String(i.id) === String(editing) ? item : i); else data.invoices.unshift(item); } save(); closeModal(); refresh(); toast('Dati salvati correttamente'); });
+    function loadSettingsForm() { Object.entries(data.settings).forEach(([key, value]) => { const input = document.getElementById(key); if (input) input.value = value || ''; }); }
+    function printQuoteById(id) { const quote = data.quotes.find(item => String(item.id) === String(id)); if (!quote) return; const t = quoteTotals(quote); const payments = data.payments.filter(payment => String(payment.quoteId) === String(quote.id)); const lines = quote.items?.length ? quote.items.map(item => `<tr><td>${esc(item.description)}</td><td style="text-align:right">${money(item.price)}</td></tr>`).join('') : `<tr><td>${esc(quote.service) || 'Prestazione'}</td><td style="text-align:right">${money(quote.total)}</td></tr>`; const paymentRows = payments.length ? payments.map(payment => `<tr><td>Pagamento del ${esc(payment.date)}${payment.method ? ` · ${esc(payment.method)}` : ''}</td><td style="text-align:right">${money(payment.amount)}</td></tr>`).join('') : `<tr><td>Pagamenti ricevuti</td><td style="text-align:right">${money(0)}</td></tr>`; const popup = window.open('', '_blank', 'width=800,height=900'); if (!popup) { toast('Consenti i popup per stampare il preventivo'); return; } popup.document.write(`<html lang="it"><head><title>${esc(quote.number)}</title><style>body{font-family:Arial,sans-serif;color:#18323a;padding:40px}h1{color:#07534f}table{width:100%;border-collapse:collapse;margin-top:25px}td{padding:12px;border-bottom:1px solid #ddd}.total{font-size:20px;font-weight:bold;text-align:right;margin-top:25px}</style></head><body><h1>${esc(data.settings.studioName)}</h1><p>${esc(data.settings.doctorName)}<br>${esc(data.settings.address)} ${esc(data.settings.city)}<br>${esc(data.settings.vat)}</p><hr><h2>Preventivo ${esc(quote.number)}</h2><p>Paziente: <strong>${esc(quote.patient)}</strong><br>Data: ${esc(quote.date)}</p><table>${lines}<tr><td><strong>Totale preventivo</strong></td><td style="text-align:right"><strong>${money(quote.total)}</strong></td></tr>${paymentRows}<tr><td><strong>Totale pagamenti ricevuti</strong></td><td style="text-align:right"><strong>${money(t.paid)}</strong></td></tr><tr><td><strong>Residuo</strong></td><td style="text-align:right"><strong>${money(t.balance)}</strong></td></tr></table><div class="total">Totale preventivo: ${money(quote.total)}</div><script>window.onload=()=>window.print();<\/script></body></html>`); popup.document.close(); }
+    function printPrescriptionById(id) { const prescription = data.prescriptions.find(item => String(item.id) === String(id)); if (!prescription) return; const popup = window.open('', '_blank', 'width=800,height=900'); if (!popup) { toast('Consenti i popup per stampare la richiesta esami'); return; } const exams = String(prescription.exams || '').split(',').map(item => item.trim()).filter(Boolean).map(item => `<li>${esc(item)}</li>`).join(''); popup.document.write(`<html lang="it"><head><title>Richiesta esami - ${esc(prescription.patient) || 'Paziente'}</title><style>body{font-family:Arial,sans-serif;color:#18323a;padding:40px;max-width:760px;margin:auto}h1{color:#07534f;margin-bottom:4px}h2{border-bottom:1px solid #ccd5d1;padding-bottom:12px;margin-top:28px}.meta{line-height:1.7;margin:24px 0}li{padding:8px 0;border-bottom:1px solid #e3e8e5}footer{margin-top:70px;border-top:1px solid #ccd5d1;padding-top:20px;text-align:right}<\/style></head><body><h1>${esc(data.settings.studioName)}</h1><p>${esc(data.settings.doctorName)}<br>${esc(data.settings.address)} ${esc(data.settings.city)}<br>${esc(data.settings.phone)} · ${esc(data.settings.email)}</p><hr><h2>Richiesta esami</h2><div class="meta"><strong>Paziente:</strong> ${esc(prescription.patient) || '—'}<br><strong>Data:</strong> ${esc(prescription.date) || '—'}</div><h3>Esami richiesti</h3><ul>${exams || '<li>Nessun esame indicato</li>'}</ul>${prescription.notes ? `<p><strong>Note:</strong> ${esc(prescription.notes)}</p>` : ''}<footer>Firma del medico: ______________________________</footer><script>window.onload=()=>window.print();<\/script></body></html>`); popup.document.close(); }
+    function printInvoiceById(id) { const invoice = data.invoices.find(item => String(item.id) === String(id)); if (!invoice) return; const popup = window.open('', '_blank', 'width=800,height=900'); if (!popup) { toast('Consenti i popup per stampare la fattura'); return; } popup.document.write(`<html lang="it"><head><title>${esc(invoice.id)}</title><style>body{font-family:Arial,sans-serif;color:#18323a;padding:40px}h1{color:#07534f}.box{border:1px solid #ccd5d1;padding:20px;margin-top:25px}strong{float:right}</style></head><body><h1>${esc(data.settings.studioName)}</h1><p>${esc(data.settings.doctorName)}<br>${esc(data.settings.address)} ${esc(data.settings.city)}<br>${esc(data.settings.vat)}</p><hr><h2>Fattura ${esc(invoice.id)}</h2><p>Paziente: <strong>${esc(invoice.patient)}</strong><br>Data: ${esc(invoice.date)}<br>Scadenza: ${esc(invoice.due)}</p><div class="box">${invoice.partial ? 'Pagamento parziale' : 'Prestazione'}<strong>${money(invoice.amount)}</strong></div><script>window.onload=()=>window.print();<\/script></body></html>`); popup.document.close(); }
+    document.getElementById('saveSettings').addEventListener('click', () => { const formData = new FormData(document.getElementById('settingsForm')); const values = Object.fromEntries(formData.entries()); data.settings = { ...data.settings, ...values }; save(); document.querySelector('.brand h1').textContent = data.settings.studioName || defaultSettings.studioName; renderGreeting(); toast('Impostazioni salvate'); });
+    document.getElementById('exportBackup').addEventListener('click', () => { const blob = new Blob([JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), data }, null, 2)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `backup-denti-cura-${new Date().toISOString().slice(0, 10)}.json`; link.click(); URL.revokeObjectURL(link.href); toast('Backup esportato'); });
+    document.getElementById('importBackup').addEventListener('click', () => document.getElementById('backupFile').click());
+    document.getElementById('backupFile').addEventListener('change', event => { const file = event.target.files[0]; if (!file) return; if (!window.confirm('Importando questo backup tutti i dati attuali (pazienti, agenda, fatture, preventivi) verranno sostituiti. Continuare?')) { event.target.value = ''; return; } const reader = new FileReader(); reader.onload = () => { try { const parsed = JSON.parse(reader.result); const imported = parsed.data || parsed; if (!Array.isArray(imported.patients) || !Array.isArray(imported.appointments) || !Array.isArray(imported.invoices)) throw new Error('Formato backup non valido'); data = { ...imported, settings: { ...defaultSettings, ...(imported.settings || {}) } }; data.settings.quoteFields = Array.isArray(data.settings.quoteFields) ? data.settings.quoteFields.map(field => typeof field === 'string' ? { description: field, price: 0 } : { description: field.description || '', price: Number(field.price || 0) }) : defaultSettings.quoteFields.map(description => ({ description, price: 0 })); data.settings.doctors = Array.isArray(data.settings.doctors) && data.settings.doctors.length ? data.settings.doctors : [...defaultSettings.doctors];     data.settings.workFields = Array.isArray(data.settings.workFields) && data.settings.workFields.length ? data.settings.workFields : [...defaultSettings.workFields]; data.settings.services = Array.isArray(data.settings.services) && data.settings.services.length ? data.settings.services : data.settings.workFields.map((item, index) => ({ id: item.id || Date.now() + index, description: item.description, duration: item.duration || '', price: Number(data.settings.quoteFields[index]?.price || 0) })); data.quotes = Array.isArray(data.quotes) ? data.quotes : []; data.payments = Array.isArray(data.payments) ? data.payments : []; save(); loadSettingsForm(); refresh(); toast('Backup importato'); } catch (error) { toast(`Importazione fallita: ${error.message}`); } event.target.value = ''; }; reader.readAsText(file); });
+    ['appointmentSearch', 'patientSearch', 'invoiceSearch', 'quoteSearch'].forEach(id => document.getElementById(id)?.addEventListener('input', refresh));
+    ['appointmentFilter', 'invoiceFilter'].forEach(id => document.getElementById(id)?.addEventListener('change', refresh));
+
+    // Backup automatico su cartella locale.
+    // Dentro Electron: dialogo nativo + fs nel processo main, copia periodica del file cifrato.
+    // In un browser normale (senza Electron): File System Access API + IndexedDB, come fallback.
+    function updateBackupAutoUI(message, hasFolder) {
+      const statusEl = document.getElementById('backupAutoStatus');
+      const setBtn = document.getElementById('setBackupFolder');
+      const clearBtn = document.getElementById('clearBackupFolder');
+      if (statusEl && message) statusEl.textContent = message;
+      if (setBtn) setBtn.textContent = hasFolder ? 'Cambia cartella' : 'Scegli cartella di backup';
+      if (clearBtn) clearBtn.hidden = !hasFolder;
+    }
+    async function initBackupFolderElectron() {
+      const setBtn = document.getElementById('setBackupFolder');
+      const clearBtn = document.getElementById('clearBackupFolder');
+      const note = document.getElementById('backupAutoNote');
+      if (note) note.textContent = 'Scegli una cartella sul computer dello studio: ogni 2 ore verrà copiata lì una copia cifrata del file dati, in aggiunta al backup manuale.';
+      const status = await window.desktopApp.backup.getStatus();
+      if (status?.folderPath) updateBackupAutoUI(`Attivo · cartella "${status.folderName}"${status.lastBackupAt ? ` · ultimo backup ${status.lastBackupAt}` : ''}`, true);
+      else updateBackupAutoUI('Non configurato', false);
+      setBtn?.addEventListener('click', async () => {
+        const result = await window.desktopApp.backup.chooseFolder();
+        if (result?.canceled) return;
+        if (!result?.ok) { toast('Impossibile impostare la cartella di backup'); return; }
+        updateBackupAutoUI(`Attivo · cartella "${result.folderName}"${result.lastBackupAt ? ` · ultimo backup ${result.lastBackupAt}` : ''}`, true);
+        toast('Backup automatico attivato');
+      });
+      clearBtn?.addEventListener('click', async () => {
+        await window.desktopApp.backup.clearFolder();
+        updateBackupAutoUI('Non configurato', false);
+        toast('Backup automatico disattivato');
+      });
+    }
+    const BACKUP_INTERVAL_MS = 2 * 60 * 60 * 1000;
+    const backupDbName = 'denti-cura-backup-db';
+    const backupStoreName = 'handles';
+    let backupDirHandle = null;
+    let backupIntervalId = null;
+    function openBackupDb() { return new Promise((resolve, reject) => { const request = indexedDB.open(backupDbName, 1); request.onupgradeneeded = () => request.result.createObjectStore(backupStoreName); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); }); }
+    async function idbSet(key, value) { const db = await openBackupDb(); return new Promise((resolve, reject) => { const tx = db.transaction(backupStoreName, 'readwrite'); tx.objectStore(backupStoreName).put(value, key); tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); }); }
+    async function idbGet(key) { const db = await openBackupDb(); return new Promise((resolve, reject) => { const tx = db.transaction(backupStoreName, 'readonly'); const request = tx.objectStore(backupStoreName).get(key); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); }); }
+    async function idbDelete(key) { const db = await openBackupDb(); return new Promise((resolve, reject) => { const tx = db.transaction(backupStoreName, 'readwrite'); tx.objectStore(backupStoreName).delete(key); tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); }); }
+    async function writeAutoBackup() {
+      if (!backupDirHandle) return;
+      try {
+        const stamp = new Date();
+        const name = `backup-denti-cura-${stamp.toISOString().slice(0, 16).replace(/[:T]/g, '-')}.json`;
+        const fileHandle = await backupDirHandle.getFileHandle(name, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(JSON.stringify({ version: 1, exportedAt: stamp.toISOString(), data }, null, 2));
+        await writable.close();
+        updateBackupAutoUI(`Attivo · cartella "${backupDirHandle.name}" · ultimo backup ${stamp.toLocaleString('it-IT')}`, true);
+      } catch (error) { toast(`Backup automatico non riuscito: ${error.message}`); }
+    }
+    function startBackupInterval() { if (backupIntervalId) clearInterval(backupIntervalId); backupIntervalId = setInterval(writeAutoBackup, BACKUP_INTERVAL_MS); }
+    async function initBackupFolderBrowser() {
+      const setBtn = document.getElementById('setBackupFolder');
+      if (!('showDirectoryPicker' in window)) {
+        if (setBtn) setBtn.disabled = true;
+        updateBackupAutoUI('Non disponibile in questo browser', false);
+        const note = document.getElementById('backupAutoNote');
+        if (note) note.textContent = 'Il tuo browser non supporta il salvataggio automatico su cartella (serve Chrome o Edge su desktop). Usa "Esporta backup JSON" per un salvataggio manuale.';
+        return;
+      }
+      try {
+        const stored = await idbGet('backupDir');
+        if (stored) {
+          const permission = await stored.queryPermission({ mode: 'readwrite' });
+          if (permission === 'granted') { backupDirHandle = stored; updateBackupAutoUI(`Attivo · cartella "${stored.name}"`, true); startBackupInterval(); }
+          else { if (setBtn) setBtn.textContent = 'Conferma permesso cartella'; updateBackupAutoUI(`Cartella "${stored.name}" impostata: conferma il permesso`, true); }
+        }
+      } catch (error) { /* nessuna cartella salvata in precedenza */ }
+      setBtn?.addEventListener('click', async () => {
+        try {
+          let handle = null;
+          const stored = await idbGet('backupDir');
+          if (stored && (await stored.queryPermission({ mode: 'readwrite' })) !== 'granted') { if ((await stored.requestPermission({ mode: 'readwrite' })) === 'granted') handle = stored; }
+          if (!handle) handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+          await idbSet('backupDir', handle);
+          backupDirHandle = handle;
+          updateBackupAutoUI(`Attivo · cartella "${handle.name}"`, true);
+          startBackupInterval();
+          await writeAutoBackup();
+          toast('Backup automatico attivato');
+        } catch (error) { if (error.name !== 'AbortError') toast('Impossibile impostare la cartella di backup'); }
+      });
+      document.getElementById('clearBackupFolder')?.addEventListener('click', async () => {
+        if (backupIntervalId) clearInterval(backupIntervalId);
+        backupIntervalId = null;
+        backupDirHandle = null;
+        await idbDelete('backupDir');
+        updateBackupAutoUI('Non configurato', false);
+        toast('Backup automatico disattivato');
+      });
+    }
+    function initBackupFolder() { if (isElectron) initBackupFolderElectron(); else initBackupFolderBrowser(); }
+    initBackupFolder();
+
+    loadData().then(() => { loadSettingsForm(); refresh(); });
+  </script>
+</body>
+</html>

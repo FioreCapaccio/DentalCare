@@ -1,0 +1,45 @@
+name: Build Windows installer
+
+# Compila l'app "Denti & Cura" per Windows su un runner Windows vero di GitHub,
+# così non serve Wine né un PC Windows per generare l'installer .exe.
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "Studio_Dentistico.html"
+      - "main.js"
+      - "preload.js"
+      - "package.json"
+      - "package-lock.json"
+      - "build/**"
+      - ".github/workflows/build-windows.yml"
+  workflow_dispatch: {}
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Scarica il codice
+        uses: actions/checkout@v4
+
+      - name: Imposta Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Installa le dipendenze
+        run: npm ci
+
+      - name: Compila l'installer e la versione portable
+        run: npm run dist:win
+
+      - name: Carica gli eseguibili come artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: denti-e-cura-windows
+          path: |
+            dist/*.exe
+            dist/latest.yml
+          if-no-files-found: error
+          retention-days: 30
