@@ -1,0 +1,46 @@
+name: Build macOS app
+
+# Compila l'app "Denti & Cura" per macOS (Intel + Apple Silicon, binario universale)
+# su un runner Mac vero di GitHub. L'app non è firmata con un certificato Apple
+# Developer: al primo avvio va aperta con tasto destro -> Apri per superare Gatekeeper.
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "Studio_Dentistico.html"
+      - "main.js"
+      - "preload.js"
+      - "package.json"
+      - "package-lock.json"
+      - "build/**"
+      - ".github/workflows/build-mac.yml"
+  workflow_dispatch: {}
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Scarica il codice
+        uses: actions/checkout@v4
+
+      - name: Imposta Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Installa le dipendenze
+        run: npm ci
+
+      - name: Compila il .dmg e lo .zip
+        run: npm run dist:mac
+
+      - name: Carica i pacchetti come artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: denti-e-cura-mac
+          path: |
+            dist/*.dmg
+            dist/*.zip
+          if-no-files-found: error
+          retention-days: 30
